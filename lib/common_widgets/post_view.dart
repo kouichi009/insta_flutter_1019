@@ -18,9 +18,14 @@ class _PostViewState extends State<PostView> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
+    return ListView(
       children: <Widget>[
+        buildPostImage(),
+        buildPostHeader(),
+        buildPostFooter(),
+        buildPostImage(),
+        buildPostHeader(),
+        buildPostFooter(),
         buildPostImage(),
         buildPostHeader(),
         buildPostFooter()

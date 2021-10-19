@@ -56,7 +56,6 @@ class _HomeScreenState extends State<HomeScreen> {
           TimelineScreen(),
           CameraScreen(),
           ProfileScreen(),
-          EditProfileScreen(),
         ],
         controller: pageController,
         onPageChanged: onPageChanged,
@@ -75,7 +74,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             BottomNavigationBarItem(icon: Icon(Icons.account_circle)),
-            BottomNavigationBarItem(icon: Icon(Icons.whatshot)),
           ]),
     );
     // return RaisedButton(
