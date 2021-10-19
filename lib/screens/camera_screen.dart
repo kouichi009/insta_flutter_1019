@@ -170,9 +170,7 @@ class _CameraScreenState extends State<CameraScreen> {
   }
 
   uploadStorageDatabase() async {
-    print('aaaaaa!@@@@@@@@@@');
     final downloadUrl = await uploadImage(this.file);
-    print('$downloadUrl $captionController.text');
     postsRef.doc(postId).set({
       "postId": postId,
       "ownerId": 'Rfhmu5OaCBPROJ0wLNoHb3K3OiE2',

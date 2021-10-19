@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class UserModel {
+class Post {
   final String id;
   final String name;
-  final String profileImageUrl;
-  // final String email;
-  // final String bio;
+  final String mediaUrl;
+  final String ownerId;
+  final dynamic likes;
   // final String token;
   // final bool isBanned;
   // final String role;
@@ -13,22 +13,29 @@ class UserModel {
   // final String website;
   // final Timestamp timeCreated;
 
-  UserModel({required this.id, required this.name, required this.profileImageUrl
-      // required this.email,
-      // required this.bio,
-      // required this.token,
-      // required this.isBanned,
-      // required this.isVerified,
-      // required this.website,
-      // required this.role,
-      // required this.timeCreated,
-      });
+  Post({
+    required this.id,
+    required this.name,
+    required this.mediaUrl,
+    required this.ownerId,
+    required this.likes,
+    // required this.bio,
+    // required this.token,
+    // required this.isBanned,
+    // required this.isVerified,
+    // required this.website,
+    // required this.role,
+    // required this.timeCreated,
+  });
 
-  factory UserModel.fromDoc(DocumentSnapshot doc) {
-    return UserModel(
+  factory Post.fromDoc(DocumentSnapshot doc) {
+    return Post(
       id: 'doc.documentID',
       name: doc['name'],
-      profileImageUrl: doc['profileImageUrl'],
+      mediaUrl: doc['mediaUrl'],
+      ownerId: doc['ownerId'],
+      likes: doc['likes'],
+
       // email: doc['email'],
       // bio: doc['bio'] ?? '',
       // token: doc['token'] ?? '',
