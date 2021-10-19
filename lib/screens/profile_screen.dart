@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_flutter02/common_widgets/header.dart';
+import 'package:instagram_flutter02/common_widgets/post_grid_view.dart';
+import 'package:instagram_flutter02/common_widgets/post_view.dart';
 import 'package:instagram_flutter02/models/user_model.dart';
 import 'package:instagram_flutter02/screens/edit_profile_screen.dart';
 import 'package:instagram_flutter02/screens/home_screen.dart';
@@ -14,6 +16,8 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  String postOrientation = "grid";
+
   buildProfileHeader() {
     return FutureBuilder(
         future: usersRef.doc('Rfhmu5OaCBPROJ0wLNoHb3K3OiE2').get(),
@@ -114,6 +118,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  setPostOrientation(String postOrientation) {
+    setState(() {
+      this.postOrientation = postOrientation;
+    });
+  }
+
+  buildPostOrientation() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: <Widget>[
+        IconButton(
+          onPressed: () => setPostOrientation("grid"),
+          icon: Icon(Icons.account_circle),
+          color: postOrientation == 'grid'
+              ? Theme.of(context).primaryColor
+              : Colors.grey,
+        ),
+        IconButton(
+          onPressed: () => setPostOrientation("list"),
+          icon: Icon(Icons.favorite),
+          color: postOrientation == 'list'
+              ? Theme.of(context).primaryColor
+              : Colors.grey,
+        ),
+      ],
+    );
+  }
+
   editProfile() {
     // Navigator.push(
     //     context, MaterialPageRoute(builder: (context) => EditProfileScreen()));
@@ -134,11 +166,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: <Widget>[
           buildProfileHeader(),
           Divider(),
-          // buildTogglePostOrientation(),
-          // Divider(
-          //   height: 0.0,
-          // ),
-          // buildProfilePosts(),
+          buildPostOrientation(),
+          PostGridView(),
         ],
       ),
     );
