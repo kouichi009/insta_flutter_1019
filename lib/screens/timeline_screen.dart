@@ -112,27 +112,25 @@ class _TimelineScreenState extends State<TimelineScreen> {
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  DefaultTextStyle(
-                      style: new TextStyle(color: Colors.black),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 3,
-                      child: new Padding(
-                        child: new Text("description"),
-                        padding: new EdgeInsets.only(top: 10.0),
-                      )),
+                  Row(
+                    children: <Widget>[
+                      GestureDetector(
+                        onTap: null,
+                        child: Icon(
+                          isLiked ? Icons.favorite : Icons.favorite_border,
+                          size: 35.0,
+                          color: Colors.pink,
+                        ),
+                      ),
+                      Container(
+                        child: Text('12'),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
-            GestureDetector(
-              onTap: null,
-              child: Icon(
-                isLiked ? Icons.favorite : Icons.favorite_border,
-                size: 28.0,
-                color: Colors.pink,
-              ),
-            ),
-            Container(child: Text('12')),
-            Padding(padding: EdgeInsets.only(right: 20.0)),
+
             // GestureDetector(
             //   onTap: () => showComments(
             //     context,

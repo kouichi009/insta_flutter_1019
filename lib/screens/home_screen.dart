@@ -3,6 +3,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_flutter02/screens/camera_screen.dart';
+import 'package:instagram_flutter02/screens/edit_profile_screen.dart';
 import 'package:instagram_flutter02/screens/profile_screen.dart';
 import 'package:instagram_flutter02/screens/timeline_screen.dart';
 
@@ -55,6 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
           TimelineScreen(),
           CameraScreen(),
           ProfileScreen(),
+          EditProfileScreen(),
         ],
         controller: pageController,
         onPageChanged: onPageChanged,
@@ -73,6 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             BottomNavigationBarItem(icon: Icon(Icons.account_circle)),
+            BottomNavigationBarItem(icon: Icon(Icons.whatshot)),
           ]),
     );
     // return RaisedButton(
