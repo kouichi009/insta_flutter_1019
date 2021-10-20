@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:instagram_flutter02/models/user_model.dart';
-import 'package:instagram_flutter02/screens/home_screen.dart';
+import 'package:instagram_flutter02/utilities/constants.dart';
 
 class PostView extends StatefulWidget {
   const PostView({Key? key}) : super(key: key);
@@ -35,7 +35,7 @@ class _PostViewState extends State<PostView> {
 
   buildPostHeader() {
     return FutureBuilder(
-      future: usersRef.doc('Rfhmu5OaCBPROJ0wLNoHb3K3OiE2').get(),
+      future: usersRef.doc('YMLw3UroqWQ4XnxO3YoKqQQYgdD3').get(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (!snapshot.hasData) {
           return Text('loading');

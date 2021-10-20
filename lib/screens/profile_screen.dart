@@ -6,6 +6,7 @@ import 'package:instagram_flutter02/common_widgets/post_view.dart';
 import 'package:instagram_flutter02/models/user_model.dart';
 import 'package:instagram_flutter02/screens/edit_profile_screen.dart';
 import 'package:instagram_flutter02/screens/home_screen.dart';
+import 'package:instagram_flutter02/utilities/constants.dart';
 import 'package:instagram_flutter02/utilities/themes.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -20,7 +21,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   buildProfileHeader() {
     return FutureBuilder(
-        future: usersRef.doc('Rfhmu5OaCBPROJ0wLNoHb3K3OiE2').get(),
+        future: usersRef.doc('YMLw3UroqWQ4XnxO3YoKqQQYgdD3').get(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (!snapshot.hasData) {
             // return circularProgress();

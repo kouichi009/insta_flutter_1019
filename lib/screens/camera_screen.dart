@@ -2,13 +2,16 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:instagram_flutter02/utilities/constants.dart';
 import 'package:instagram_flutter02/utilities/themes.dart';
 import 'package:uuid/uuid.dart';
 
 import 'home_screen.dart';
 
 class CameraScreen extends StatefulWidget {
-  const CameraScreen({Key? key}) : super(key: key);
+  String? currentUid;
+
+  CameraScreen({this.currentUid});
 
   @override
   _CameraScreenState createState() => _CameraScreenState();
@@ -93,7 +96,7 @@ class _CameraScreenState extends State<CameraScreen> {
             padding: const EdgeInsets.all(35.0),
             height: 130.0,
             child: FlatButton(
-              onPressed: () => uploadStorageDatabase(),
+              onPressed: () => upload(),
               // print('push login button@@@@@'),
               color: Colors.orange,
               padding: const EdgeInsets.all(10.0),
@@ -169,15 +172,15 @@ class _CameraScreenState extends State<CameraScreen> {
     );
   }
 
-  uploadStorageDatabase() async {
+  upload() async {
     final downloadUrl = await uploadImage(this.file);
     postsRef.doc(postId).set({
-      "postId": postId,
-      "ownerId": 'Rfhmu5OaCBPROJ0wLNoHb3K3OiE2',
-      "username": '44',
-      "mediaUrl": downloadUrl,
-      "description": captionController.text,
+      "id": postId,
+      "uid": widget.currentUid,
+      "photoUrl": downloadUrl,
+      "likeCount": 0,
       "timestamp": timestamp,
+      "caption": captionController.text,
       "likes": {},
     });
   }

@@ -5,14 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:instagram_flutter02/screens/camera_screen.dart';
 import 'package:instagram_flutter02/screens/edit_profile_screen.dart';
 import 'package:instagram_flutter02/screens/profile_screen.dart';
+import 'package:instagram_flutter02/screens/sign_up_screen.dart';
 import 'package:instagram_flutter02/screens/timeline_screen.dart';
 
-final usersRef = FirebaseFirestore.instance.collection('users');
-final postsRef = FirebaseFirestore.instance.collection('posts');
-final DateTime timestamp = DateTime.now();
-
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  // const HomeScreen({Key? key}) : super(key: key);
+  final String? currentUid;
+
+  HomeScreen({this.currentUid});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -54,8 +54,9 @@ class _HomeScreenState extends State<HomeScreen> {
       body: PageView(
         children: <Widget>[
           TimelineScreen(),
-          CameraScreen(),
+          CameraScreen(currentUid: widget.currentUid),
           ProfileScreen(),
+          SignUpScreen(),
         ],
         controller: pageController,
         onPageChanged: onPageChanged,
@@ -74,6 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             BottomNavigationBarItem(icon: Icon(Icons.account_circle)),
+            BottomNavigationBarItem(icon: Icon(Icons.email)),
           ]),
     );
     // return RaisedButton(
