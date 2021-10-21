@@ -26,14 +26,34 @@ class _PostViewState extends State<PostView> {
 
   handleLikePost() {
     bool _isLiked = widget.post!.likes[widget.currentUid] == true;
+    WriteBatch batch = FirebaseFirestore.instance.batch();
 
     if (_isLiked) {
-      // WriteBatch batch = FirebaseFirestore.instance.batch();
-      // batch.update(postsRef.doc(widget.currentUid),
-      postsRef.doc(widget.post!.id).update({
+      // batch.update(postsRef.doc(widget.post!.id)}{
+      //   'likes.${widget.currentUid}': false,
+      //   'likeCount': widget.post!.likeCount - 1
+      // });
+      batch.update(postsRef.doc(widget.post!.id), {
         'likes.${widget.currentUid}': false,
         'likeCount': widget.post!.likeCount - 1
       });
+
+      batch.set(
+          usersRef
+              .doc(widget.post!.uid)
+              .collection('likedPosts')
+              .doc(widget.post!.id),
+          {
+            'postId': widget.post!.id,
+            'isLiked': false,
+            'timestamp': timestamp,
+            'uid': widget.post!.uid
+          });
+
+      // postsRef.doc(widget.post!.id).update({
+      //   'likes.${widget.currentUid}': false,
+      //   'likeCount': widget.post!.likeCount - 1
+      // });
       setState(() {
         likeCount -= 1;
         isLiked = false;
@@ -44,6 +64,19 @@ class _PostViewState extends State<PostView> {
         'likes.${widget.currentUid}': true,
         'likeCount': widget.post!.likeCount + 1
       });
+
+      batch.set(
+          usersRef
+              .doc(widget.post!.uid)
+              .collection('likedPosts')
+              .doc(widget.post!.id),
+          {
+            'postId': widget.post!.id,
+            'isLiked': true,
+            'timestamp': timestamp,
+            'uid': widget.post!.uid
+          });
+
       setState(() {
         likeCount += 1;
         isLiked = true;
@@ -56,6 +89,7 @@ class _PostViewState extends State<PostView> {
         });
       });
     }
+    batch.commit();
   }
 
   buildPostHeader() {

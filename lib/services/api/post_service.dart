@@ -18,6 +18,37 @@ class PostService {
     return posts;
   }
 
+  static Future<List<Post>> queryMyPosts(currentUid) async {
+    QuerySnapshot snapshot = await postsRef
+        .where("uid", isEqualTo: currentUid)
+        .orderBy("timestamp", descending: true)
+        .get();
+
+    List<Post> posts = snapshot.docs.map((doc) => Post.fromDoc(doc)).toList();
+    return posts;
+  }
+
+  static Future<List<Post>> queryLikedPosts(currentUid) async {
+    List<Post> posts = [];
+    QuerySnapshot snapshot = await usersRef
+        .doc(currentUid)
+        .collection('likedPosts')
+        .where("isLiked", isEqualTo: true)
+        .orderBy("timestamp", descending: true)
+        .get();
+    print('snap@@@@@@@: $snapshot ${snapshot.size} ${snapshot.docs}');
+    await Future.wait(snapshot.docs.map((doc) async {
+      print('aaaaaaaaaaaaggggggg $doc');
+      String postId = doc['postId'];
+      print('postID: $postId');
+      DocumentSnapshot documentSnapshot = await postsRef.doc(postId).get();
+      Post post = Post.fromDoc(documentSnapshot);
+      posts.add(post);
+    }));
+    print('finish');
+    return posts;
+  }
+
   // static Future<void> signUpUser(
   //     BuildContext context, String name, String email, String password) async {
   //   try {

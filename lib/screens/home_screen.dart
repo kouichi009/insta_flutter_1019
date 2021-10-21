@@ -56,7 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: <Widget>[
           TimelineScreen(currentUid: widget.currentUid),
           CameraScreen(currentUid: widget.currentUid),
-          ProfileScreen(),
+          ProfileScreen(currentUid: widget.currentUid),
           SignUpScreen(),
         ],
         controller: pageController,

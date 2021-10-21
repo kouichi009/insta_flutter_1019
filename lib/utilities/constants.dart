@@ -2,4 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 final usersRef = FirebaseFirestore.instance.collection('users');
 final postsRef = FirebaseFirestore.instance.collection('posts');
+final MYPOSTS = 'MYPOSTS';
+final FAV = 'FAV';
 final DateTime timestamp = DateTime.now();

@@ -3,25 +3,53 @@ import 'package:flutter/material.dart';
 import 'package:instagram_flutter02/common_widgets/header.dart';
 import 'package:instagram_flutter02/common_widgets/post_grid_view.dart';
 import 'package:instagram_flutter02/common_widgets/post_view.dart';
+import 'package:instagram_flutter02/models/post.dart';
 import 'package:instagram_flutter02/models/user_model.dart';
 import 'package:instagram_flutter02/screens/edit_profile_screen.dart';
 import 'package:instagram_flutter02/screens/home_screen.dart';
+import 'package:instagram_flutter02/services/api/post_service.dart';
 import 'package:instagram_flutter02/utilities/constants.dart';
 import 'package:instagram_flutter02/utilities/themes.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  String? currentUid;
+  ProfileScreen({this.currentUid});
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  String postOrientation = "grid";
+  String postType = '';
+  List<Post> _posts = [];
+
+  @override
+  void initState() {
+    super.initState();
+    queryMyPosts();
+  }
+
+  queryMyPosts() async {
+    List<Post> posts = await PostService.queryMyPosts(widget.currentUid);
+    if (!mounted) return;
+    setState(() {
+      _posts = posts;
+      postType = MYPOSTS;
+    });
+  }
+
+  queryLikedPosts() async {
+    List<Post> posts = await PostService.queryLikedPosts(widget.currentUid);
+    if (!mounted) return;
+    setState(() {
+      postType = FAV;
+      _posts = posts;
+    });
+  }
 
   buildProfileHeader() {
     return FutureBuilder(
-        future: usersRef.doc('YMLw3UroqWQ4XnxO3YoKqQQYgdD3').get(),
+        future: usersRef.doc(widget.currentUid).get(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (!snapshot.hasData) {
             // return circularProgress();
@@ -119,29 +147,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  setPostOrientation(String postOrientation) {
-    setState(() {
-      this.postOrientation = postOrientation;
-    });
-  }
-
-  buildPostOrientation() {
+  buildpostType() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
         IconButton(
-          onPressed: () => setPostOrientation("grid"),
+          onPressed: () => queryMyPosts(),
           icon: Icon(Icons.account_circle),
-          color: postOrientation == 'grid'
+          color: postType == MYPOSTS
               ? Theme.of(context).primaryColor
               : Colors.grey,
         ),
         IconButton(
-          onPressed: () => setPostOrientation("list"),
+          onPressed: () => queryLikedPosts(),
           icon: Icon(Icons.favorite),
-          color: postOrientation == 'list'
-              ? Theme.of(context).primaryColor
-              : Colors.grey,
+          color: postType == FAV ? Theme.of(context).primaryColor : Colors.grey,
         ),
       ],
     );
@@ -159,6 +179,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Widget _buildGridPosts() {
+    // Column
+    return PostGridView(posts: _posts);
+    List<PostView> postViews = [];
+    _posts.forEach((post) {
+      // postViews.add(PostView(
+      //   postStatus: PostStatus.feedPost,
+      //   currentUserId: widget.currentUserId,
+      //   post: post,
+      //   author: _profileUser,
+      // ));
+      postViews.add(
+          PostView(currentUid: 'YMLw3UroqWQ4XnxO3YoKqQQYgdD3', post: post));
+    });
+    // return Text('654123');
+    return Column(
+      children: postViews,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -167,8 +207,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: <Widget>[
           buildProfileHeader(),
           Divider(),
-          buildPostOrientation(),
-          PostGridView(),
+          buildpostType(),
+          _buildGridPosts(),
+          // RefreshIndicator(
+          //     onRefresh: () => queryPosts(), child: _buildDisplayPosts())
+          // PostGridView(posts: []),
         ],
       ),
     );
