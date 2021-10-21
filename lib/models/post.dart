@@ -2,48 +2,32 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Post {
   final String id;
-  final String name;
-  final String mediaUrl;
-  final String ownerId;
+  final String caption;
+  final String photoUrl;
+  final String uid;
   final dynamic likes;
-  // final String token;
-  // final bool isBanned;
-  // final String role;
-  // final bool isVerified;
-  // final String website;
-  // final Timestamp timeCreated;
+  final int likeCount;
+  final Timestamp timestamp;
 
   Post({
     required this.id,
-    required this.name,
-    required this.mediaUrl,
-    required this.ownerId,
+    required this.caption,
+    required this.photoUrl,
+    required this.uid,
     required this.likes,
-    // required this.bio,
-    // required this.token,
-    // required this.isBanned,
-    // required this.isVerified,
-    // required this.website,
-    // required this.role,
-    // required this.timeCreated,
+    required this.likeCount,
+    required this.timestamp,
   });
 
   factory Post.fromDoc(DocumentSnapshot doc) {
     return Post(
-      id: 'doc.documentID',
-      name: doc['name'],
-      mediaUrl: doc['mediaUrl'],
-      ownerId: doc['ownerId'],
+      id: doc['id'],
+      caption: doc['caption'],
+      photoUrl: doc['photoUrl'],
+      uid: doc['uid'],
       likes: doc['likes'],
-
-      // email: doc['email'],
-      // bio: doc['bio'] ?? '',
-      // token: doc['token'] ?? '',
-      // isVerified: doc['isVerified'] ?? false,
-      // isBanned: doc['isBanned'],
-      // website: doc['website'] ?? '',
-      // role: doc['role'] ?? 'user',
-      // timeCreated: doc['timeCreated'],
+      likeCount: doc['likeCount'],
+      timestamp: doc['timestamp'],
     );
   }
 }

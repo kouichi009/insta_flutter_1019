@@ -7,6 +7,7 @@ import 'package:instagram_flutter02/screens/edit_profile_screen.dart';
 import 'package:instagram_flutter02/screens/profile_screen.dart';
 import 'package:instagram_flutter02/screens/sign_up_screen.dart';
 import 'package:instagram_flutter02/screens/timeline_screen.dart';
+import 'package:instagram_flutter02/services/api/auth_service.dart';
 
 class HomeScreen extends StatefulWidget {
   // const HomeScreen({Key? key}) : super(key: key);
@@ -53,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
       key: null,
       body: PageView(
         children: <Widget>[
-          TimelineScreen(),
+          TimelineScreen(currentUid: widget.currentUid),
           CameraScreen(currentUid: widget.currentUid),
           ProfileScreen(),
           SignUpScreen(),
@@ -78,58 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
             BottomNavigationBarItem(icon: Icon(Icons.email)),
           ]),
     );
-    // return RaisedButton(
-    //   child: Text('Logout'),
-    //   onPressed: logout,
-    // );
   }
-
-  // Scaffold buildUnAuthScreen() {
-  //   return Scaffold(
-  //     body: Container(
-  //       decoration: BoxDecoration(
-  //         gradient: LinearGradient(
-  //           begin: Alignment.topRight,
-  //           end: Alignment.bottomLeft,
-  //           colors: [
-  //             Theme.of(context).accentColor,
-  //             Theme.of(context).primaryColor,
-  //           ],
-  //         ),
-  //       ),
-  //       alignment: Alignment.center,
-  //       child: Column(
-  //         mainAxisAlignment: MainAxisAlignment.center,
-  //         crossAxisAlignment: CrossAxisAlignment.center,
-  //         children: <Widget>[
-  //           Text(
-  //             'FlutterShare',
-  //             style: TextStyle(
-  //               fontFamily: "Signatra",
-  //               fontSize: 90.0,
-  //               color: Colors.white,
-  //             ),
-  //           ),
-  //           GestureDetector(
-  //             onTap: login,
-  //             child: Container(
-  //               width: 260.0,
-  //               height: 60.0,
-  //               decoration: BoxDecoration(
-  //                 image: DecorationImage(
-  //                   image: AssetImage(
-  //                     'assets/images/google_signin_button.png',
-  //                   ),
-  //                   fit: BoxFit.cover,
-  //                 ),
-  //               ),
-  //             ),
-  //           )
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
 
   @override
   Widget build(BuildContext context) {

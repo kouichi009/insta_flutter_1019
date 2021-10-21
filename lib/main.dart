@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_flutter02/screens/home_screen.dart';
+import 'package:instagram_flutter02/screens/launch_screen.dart';
 import 'package:instagram_flutter02/screens/login_screen.dart';
 
 void main() async {
@@ -40,9 +41,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: HomeScreen(
-        currentUid: 'YMLw3UroqWQ4XnxO3YoKqQQYgdD3',
-      ),
+      home: LaunchScreen(),
     );
   }
 }

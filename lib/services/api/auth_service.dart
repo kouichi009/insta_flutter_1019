@@ -41,19 +41,6 @@ class AuthService {
     }
   }
 
-  // static Future<void> signUp(
-  //     BuildContext context, String email, String password) async {
-  //   try {
-  //     userCredential userCredential = await _auth.createUserWithEmailAndPassword(
-  //       email: email,
-  //       password: password,
-  //     );
-  //     FirebaseUser signedInUser = userCredential.user;
-  //   } on PlatformException catch (err) {
-  //     throw (err);
-  //   }
-  // }
-
   static Future<void> loginUser(String email, String password) async {
     try {
       print('login user@@@@@@@ $email $password');
@@ -65,38 +52,20 @@ class AuthService {
     }
   }
 
-  // static Future<void> removeToken() async {
-  //   final currentUser = await _auth.currentUser();
-  //   await usersRef
-  //       .document(currentUser.uid)
-  //       .setData({'token': ''}, merge: true);
-  // }
-
-  // static Future<void> updateToken() async {
-  //   final currentUser = await _auth.currentUser();
-  //   final token = await _messaging.getToken();
-  //   final userDoc = await usersRef.document(currentUser.uid).get();
-  //   if (userDoc.exists) {
-  //     User user = User.fromDoc(userDoc);
-  //     if (token != user.token) {
-  //       usersRef
-  //           .document(currentUser.uid)
-  //           .setData({'token': token}, merge: true);
+  // static Stream<User> onAuthStateChanged() async {
+  //   try {
+  //     final user = await FirebaseAuth.instance.authStateChanges();
+  //     return user;
+  //     if (user is User) {
+  //       print('user1');
   //     }
+  //     if (user is UserCredential) {
+  //       print('user2');
+  //     }
+  //     print("login success@@@@@@@ $user");
+  //     // return user;
+  //   } on PlatformException catch (err) {
+  //     throw (err);
   //   }
-  // }
-
-  // static Future<void> updateTokenWithUser(User user) async {
-  //   final token = await _messaging.getToken();
-  //   if (token != user.token) {
-  //     await usersRef.document(user.id).updateData({'token': token});
-  //   }
-  // }
-
-  // static Future<void> logout() async {
-  //   await removeToken();
-  //   Future.wait([
-  //     _auth.signOut(),
-  //   ]);
   // }
 }

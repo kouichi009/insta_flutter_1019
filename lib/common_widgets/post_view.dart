@@ -1,41 +1,66 @@
+import 'dart:async';
+import 'package:animator/animator.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:instagram_flutter02/common_widgets/custom_cached_image.dart';
+import 'package:instagram_flutter02/models/post.dart';
 import 'package:instagram_flutter02/models/user_model.dart';
 import 'package:instagram_flutter02/utilities/constants.dart';
 
 class PostView extends StatefulWidget {
-  const PostView({Key? key}) : super(key: key);
+  String? currentUid;
+  Post? post;
+
+  PostView({this.currentUid, this.post});
 
   @override
   _PostViewState createState() => _PostViewState();
 }
 
 class _PostViewState extends State<PostView> {
-  bool showHeart = false;
-  final String mediaUrl =
-      'https://i.guim.co.uk/img/media/26392d05302e02f7bf4eb143bb84c8097d09144b/446_167_3683_2210/master/3683.jpg?width=1200&height=1200&quality=85&auto=format&fit=crop&s=49ed3252c0b2ffb49cf8b508892e452d';
   bool isLiked = false;
+  int likeCount = 0;
+  Map likes = {};
+  bool showHeart = false;
 
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      children: <Widget>[
-        buildPostImage(),
-        buildPostHeader(),
-        buildPostFooter(),
-        buildPostImage(),
-        buildPostHeader(),
-        buildPostFooter(),
-        buildPostImage(),
-        buildPostHeader(),
-        buildPostFooter()
-      ],
-    );
+  handleLikePost() {
+    bool _isLiked = widget.post!.likes[widget.currentUid] == true;
+
+    if (_isLiked) {
+      // WriteBatch batch = FirebaseFirestore.instance.batch();
+      // batch.update(postsRef.doc(widget.currentUid),
+      postsRef.doc(widget.post!.id).update({
+        'likes.${widget.currentUid}': false,
+        'likeCount': widget.post!.likeCount - 1
+      });
+      setState(() {
+        likeCount -= 1;
+        isLiked = false;
+        likes[widget.currentUid] = false;
+      });
+    } else if (!_isLiked) {
+      postsRef.doc(widget.post!.id).update({
+        'likes.${widget.currentUid}': true,
+        'likeCount': widget.post!.likeCount + 1
+      });
+      setState(() {
+        likeCount += 1;
+        isLiked = true;
+        likes[widget.currentUid] = true;
+        showHeart = true;
+      });
+      Timer(Duration(milliseconds: 500), () {
+        setState(() {
+          showHeart = false;
+        });
+      });
+    }
   }
 
   buildPostHeader() {
     return FutureBuilder(
-      future: usersRef.doc('YMLw3UroqWQ4XnxO3YoKqQQYgdD3').get(),
+      future: usersRef.doc(widget.post!.uid).get(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (!snapshot.hasData) {
           return Text('loading');
@@ -68,29 +93,29 @@ class _PostViewState extends State<PostView> {
 
   buildPostImage() {
     return GestureDetector(
-      onDoubleTap: null,
+      onDoubleTap: handleLikePost,
       child: Stack(
         alignment: Alignment.center,
         children: <Widget>[
-          CachedNetworkImage(
-            imageUrl: mediaUrl,
+          customCachedImage(
+            widget.post!.photoUrl,
           ),
-          // showHeart
-          //     ? Animator(
-          //         duration: Duration(milliseconds: 300),
-          //         tween: Tween(begin: 0.8, end: 1.4),
-          //         curve: Curves.elasticOut,
-          //         cycles: 0,
-          //         builder: (anim) => Transform.scale(
-          //           scale: anim.value,
-          //           child: Icon(
-          //             Icons.favorite,
-          //             size: 80.0,
-          //             color: Colors.red,
-          //           ),
-          //         ),
-          //       )
-          //     : Text(""),
+          showHeart
+              ? Animator(
+                  duration: Duration(milliseconds: 300),
+                  tween: Tween(begin: 0.8, end: 1.4),
+                  curve: Curves.elasticOut,
+                  cycles: 0,
+                  builder: (context, anim, child) => Transform.scale(
+                    scale: anim.controller.value,
+                    child: Icon(
+                      Icons.favorite,
+                      size: 80.0,
+                      color: Colors.red,
+                    ),
+                  ),
+                )
+              : Text(""),
         ],
       ),
     );
@@ -110,7 +135,7 @@ class _PostViewState extends State<PostView> {
                   new Container(
                     padding: new EdgeInsets.all(5.0),
                     child: new Text(
-                      "123titletitletitletitletitletitletitletitletitletitletitletitletitletitletitletitletitletitletitletitletitletitletitletitletitle",
+                      widget.post!.caption,
                       softWrap: true,
                       style: new TextStyle(fontWeight: FontWeight.bold),
                       maxLines: 2,
@@ -120,7 +145,7 @@ class _PostViewState extends State<PostView> {
                   Row(
                     children: <Widget>[
                       GestureDetector(
-                        onTap: null,
+                        onTap: handleLikePost,
                         child: Icon(
                           isLiked ? Icons.favorite : Icons.favorite_border,
                           size: 35.0,
@@ -128,7 +153,7 @@ class _PostViewState extends State<PostView> {
                         ),
                       ),
                       Container(
-                        child: Text('12'),
+                        child: Text(likeCount.toString()),
                       ),
                     ],
                   ),
@@ -181,6 +206,37 @@ class _PostViewState extends State<PostView> {
         //     Expanded(child: Text('description'))
         //   ],
         // ),
+      ],
+    );
+  }
+
+  int getLikeCount(likes) {
+    // if no likes, return 0
+    if (likes == null) {
+      return 0;
+    }
+    int count = 0;
+    // if the key is explicitly set to true, add a like
+    likes.values.forEach((val) {
+      if (val == true) {
+        count += 1;
+      }
+    });
+    return count;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    isLiked = (widget.post!.likes[widget.currentUid] == true);
+    // likeCount = widget.post!.likeCount;
+    likes = widget.post!.likes;
+    likeCount = getLikeCount(widget.post!.likes);
+
+    return Column(
+      children: <Widget>[
+        buildPostImage(),
+        buildPostHeader(),
+        buildPostFooter(),
       ],
     );
   }

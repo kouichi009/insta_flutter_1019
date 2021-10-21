@@ -174,6 +174,8 @@ class _CameraScreenState extends State<CameraScreen> {
 
   upload() async {
     final downloadUrl = await uploadImage(this.file);
+    print(widget.currentUid);
+
     postsRef.doc(postId).set({
       "id": postId,
       "uid": widget.currentUid,
