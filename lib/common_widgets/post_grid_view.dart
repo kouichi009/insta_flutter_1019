@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:instagram_flutter02/common_widgets/custom_cached_image.dart';
 import 'package:instagram_flutter02/models/post.dart';
+import 'package:instagram_flutter02/screens/post_detail_screen.dart';
 
 class PostGridView extends StatefulWidget {
   List<Post>? posts;
+  String? currentUid;
 
-  PostGridView({this.posts});
+  PostGridView({this.currentUid, this.posts});
 
   @override
   _PostGridViewState createState() => _PostGridViewState();
@@ -31,7 +33,12 @@ class _PostGridViewState extends State<PostGridView> {
 
   PostTile(post) {
     return GestureDetector(
-      onTap: () => print('tap grid'),
+      onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                PostDetailScreen(currentUid: widget.currentUid, post: post),
+          )),
       child: customCachedImage(post.photoUrl),
     );
   }

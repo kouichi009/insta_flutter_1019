@@ -181,7 +181,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildGridPosts() {
     // Column
-    return PostGridView(posts: _posts);
+    return PostGridView(currentUid: widget.currentUid, posts: _posts);
     List<PostView> postViews = [];
     _posts.forEach((post) {
       // postViews.add(PostView(
