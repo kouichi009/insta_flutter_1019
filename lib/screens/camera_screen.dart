@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:instagram_flutter02/common_widgets/select_image_dialog.dart';
 import 'package:instagram_flutter02/utilities/constants.dart';
 import 'package:instagram_flutter02/utilities/themes.dart';
 import 'package:uuid/uuid.dart';
@@ -121,8 +122,31 @@ class _CameraScreenState extends State<CameraScreen> {
     );
   }
 
+  selectImage() {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return SimpleDialog(
+          title: Text("Create Post"),
+          children: <Widget>[
+            SimpleDialogOption(
+                child: Text("Photo with Camera"),
+                onPressed: () => handleImage('camera')),
+            SimpleDialogOption(
+                child: Text("Image from Gallery"),
+                onPressed: () => handleImage('gallery')),
+            SimpleDialogOption(
+              child: Text("Cancel"),
+              onPressed: () => Navigator.pop(context),
+            )
+          ],
+        );
+      },
+    );
+  }
+
   handleImage(type) async {
-    print("handleimage $type");
+    print("handleimage888 $type");
     Navigator.pop(context);
     ImageSource imageSource;
     if (type == 'camera') {
@@ -147,29 +171,6 @@ class _CameraScreenState extends State<CameraScreen> {
         await storageRef.child("post_$postId.jpg").putFile(imageFile);
     final String downloadUrl = await storedImage.ref.getDownloadURL();
     return downloadUrl;
-  }
-
-  selectImage() {
-    return showDialog(
-      context: context,
-      builder: (context) {
-        return SimpleDialog(
-          title: Text("Create Post"),
-          children: <Widget>[
-            SimpleDialogOption(
-                child: Text("Photo with Camera"),
-                onPressed: () => handleImage('camera')),
-            SimpleDialogOption(
-                child: Text("Image from Gallery"),
-                onPressed: () => handleImage('gallery')),
-            SimpleDialogOption(
-              child: Text("Cancel"),
-              onPressed: () => Navigator.pop(context),
-            )
-          ],
-        );
-      },
-    );
   }
 
   upload() async {

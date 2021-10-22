@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:instagram_flutter02/models/user_model.dart';
 import 'package:instagram_flutter02/utilities/constants.dart';
 // import 'package:firebase_auth/firebase_auth.dart' hide UserCredential;
 
@@ -24,8 +25,8 @@ class AuthService {
         'profileImageUrl':
             'https://applimura.com/wp-content/uploads/2019/08/twittericon13.jpg',
         'timestamp': timestamp,
-        'gender': 'man',
-        'dateOfBirth': '1988年9月8日',
+        'gender': '',
+        'dateOfBirth': {'year': '', 'month': '', 'day': ''},
         'uid': uid
       });
       // Navigator.pop(context);
@@ -50,6 +51,12 @@ class AuthService {
     } on PlatformException catch (err) {
       throw (err);
     }
+  }
+
+  static Future<UserModel> getUser(String uid) async {
+    DocumentSnapshot documentSnapshot = await usersRef.doc(uid).get();
+    UserModel userModel = UserModel.fromDoc(documentSnapshot);
+    return userModel;
   }
 
   // static Stream<User> onAuthStateChanged() async {

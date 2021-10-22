@@ -55,7 +55,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             // return circularProgress();
             return Text('abc');
           }
-          UserModel user = UserModel.fromDoc(snapshot.data);
+          UserModel userModel = UserModel.fromDoc(snapshot.data);
           return Padding(
             padding: EdgeInsets.all(16.0),
             child: Column(
@@ -66,7 +66,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       radius: 50.0,
                       backgroundColor: Colors.grey,
                       backgroundImage:
-                          CachedNetworkImageProvider(user.profileImageUrl),
+                          CachedNetworkImageProvider(userModel.profileImageUrl),
                     ),
                     Expanded(
                       flex: 1,
@@ -76,8 +76,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             mainAxisSize: MainAxisSize.max,
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: <Widget>[
-                              Text(user.name),
-                              Text('1988年9月8日'),
+                              Text(userModel.name),
+                              Text(
+                                  '${userModel.dateOfBirth['year']}年${userModel.dateOfBirth['month']}月${userModel.dateOfBirth['day']}日'),
                               // buildCountColumn("posts", postCount),
                               // buildCountColumn("followers", followerCount),
                               // buildCountColumn("following", followingCount),
@@ -86,7 +87,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           Container(
                             padding: EdgeInsets.only(top: 2.0),
                             child: FlatButton(
-                              onPressed: null,
+                              onPressed: () => goToEditProfile(userModel),
                               child: Container(
                                 width: 250.0,
                                 height: 35.0,
@@ -119,33 +120,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
         });
   }
 
-  Container buildButton({String? text, Function? function}) {
-    return Container(
-      padding: EdgeInsets.only(top: 2.0),
-      child: FlatButton(
-        onPressed: function!(),
-        child: Container(
-          width: 250.0,
-          height: 27.0,
-          child: Text(
-            text!,
-            style: TextStyle(
-              color: true ? Colors.black : Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: true ? Colors.white : Colors.blue,
-            border: Border.all(
-              color: true ? Colors.grey : Colors.blue,
-            ),
-            borderRadius: BorderRadius.circular(5.0),
-          ),
-        ),
-      ),
-    );
-  }
+  // Container buildButton({String? text, Function? function}) {
+  //   return Container(
+  //     padding: EdgeInsets.only(top: 2.0),
+  //     child: FlatButton(
+  //       onPressed: function!(),
+  //       child: Container(
+  //         width: 250.0,
+  //         height: 27.0,
+  //         child: Text(
+  //           text!,
+  //           style: TextStyle(
+  //             color: true ? Colors.black : Colors.white,
+  //             fontWeight: FontWeight.bold,
+  //           ),
+  //         ),
+  //         alignment: Alignment.center,
+  //         decoration: BoxDecoration(
+  //           color: true ? Colors.white : Colors.blue,
+  //           border: Border.all(
+  //             color: true ? Colors.grey : Colors.blue,
+  //           ),
+  //           borderRadius: BorderRadius.circular(5.0),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   buildpostType() {
     return Row(
@@ -167,16 +168,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  editProfile() {
-    // Navigator.push(
-    //     context, MaterialPageRoute(builder: (context) => EditProfileScreen()));
-  }
-
-  buildProfileButton() {
-    return buildButton(
-      text: "Edit Profile",
-      function: editProfile,
-    );
+  goToEditProfile(userModel) {
+    print('goToEditProfile@@@@@@@@@#####: ${userModel.name}');
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                EditProfileScreen(currentUid: userModel.uid)));
   }
 
   Widget _buildGridPosts() {
@@ -202,7 +200,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: header(context, titleText: "Profile"),
+      // appBar: header(context, titleText: "Profile"),
+      appBar: AppBar(
+        backgroundColor: Colors.white70,
+        leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: () => null),
+        title: Text(
+          "Caption Post",
+          style: TextStyle(color: Colors.black),
+        ),
+        actions: [
+          IconButton(
+              icon: Icon(Icons.check_circle_outline, color: Colors.black),
+              onPressed: () => null),
+        ],
+      ),
       body: ListView(
         children: <Widget>[
           buildProfileHeader(),

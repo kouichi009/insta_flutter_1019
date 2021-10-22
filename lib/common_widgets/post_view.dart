@@ -35,7 +35,7 @@ class _PostViewState extends State<PostView> {
       // });
       batch.update(postsRef.doc(widget.post!.id), {
         'likes.${widget.currentUid}': false,
-        'likeCount': widget.post!.likeCount - 1
+        // 'likeCount': widget.post!.likeCount - 1
       });
 
       batch.set(
@@ -60,10 +60,14 @@ class _PostViewState extends State<PostView> {
         likes[widget.currentUid] = false;
       });
     } else if (!_isLiked) {
-      postsRef.doc(widget.post!.id).update({
+      batch.update(postsRef.doc(widget.post!.id), {
         'likes.${widget.currentUid}': true,
-        'likeCount': widget.post!.likeCount + 1
+        // 'likeCount': widget.post!.likeCount + 1
       });
+      // postsRef.doc(widget.post!.id).update({
+      //   'likes.${widget.currentUid}': true,
+      //   // 'likeCount': widget.post!.likeCount + 1
+      // });
 
       batch.set(
           usersRef

@@ -4,7 +4,7 @@ class UserModel {
   final String uid;
   final String name;
   final String profileImageUrl;
-  final String dateOfBirth;
+  final dynamic dateOfBirth;
   final String gender;
   final Timestamp timestamp;
 
