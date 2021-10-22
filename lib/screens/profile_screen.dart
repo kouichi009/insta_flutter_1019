@@ -7,6 +7,7 @@ import 'package:instagram_flutter02/models/post.dart';
 import 'package:instagram_flutter02/models/user_model.dart';
 import 'package:instagram_flutter02/screens/edit_profile_screen.dart';
 import 'package:instagram_flutter02/screens/home_screen.dart';
+import 'package:instagram_flutter02/screens/news_api/news_screen.dart';
 import 'package:instagram_flutter02/services/api/post_service.dart';
 import 'package:instagram_flutter02/utilities/constants.dart';
 import 'package:instagram_flutter02/utilities/themes.dart';
@@ -197,15 +198,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  goToNewsApiPage() {
+    print('goToNewsApiPage');
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => NewsScreen()));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       // appBar: header(context, titleText: "Profile"),
       appBar: AppBar(
         backgroundColor: Colors.white70,
-        leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.black),
-            onPressed: () => null),
         title: Text(
           "Caption Post",
           style: TextStyle(color: Colors.black),
@@ -213,7 +217,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         actions: [
           IconButton(
               icon: Icon(Icons.check_circle_outline, color: Colors.black),
-              onPressed: () => null),
+              onPressed: () => goToNewsApiPage()),
         ],
       ),
       body: ListView(
