@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:instagram_flutter02/common_widgets/news_api/newsCustomListTile.dart';
 import 'package:instagram_flutter02/models/news/article_model.dart';
 import 'package:instagram_flutter02/services/api/news_api_service.dart';
@@ -17,7 +18,8 @@ class _NewsScreenState extends State<NewsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("News App", style: TextStyle(color: Colors.black)),
+        title: Text('News App ${dotenv.env['FOO']}',
+            style: TextStyle(color: Colors.black)),
         backgroundColor: Colors.white,
       ),
 
