@@ -4,11 +4,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:instagram_flutter02/models/user_model.dart';
 import 'package:instagram_flutter02/utilities/constants.dart';
-// import 'package:firebase_auth/firebase_auth.dart' hide UserCredential;
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class AuthService {
   static final FirebaseAuth _auth = FirebaseAuth.instance;
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  static final FirebaseMessaging _firebaseMessaging =
+      FirebaseMessaging.instance;
+
   // static final FirebaseMessaging _messaging = FirebaseMessaging();
 
   static Future<void> signUpUser(
@@ -27,7 +30,8 @@ class AuthService {
         'timestamp': timestamp,
         'gender': '',
         'dateOfBirth': {'year': '', 'month': '', 'day': ''},
-        'uid': uid
+        'uid': uid,
+        'androidNotificationToken': ''
       });
       // Navigator.pop(context);
       print('auth success22 $uid');

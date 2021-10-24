@@ -7,6 +7,7 @@ class UserModel {
   final dynamic dateOfBirth;
   final String gender;
   final Timestamp timestamp;
+  final String androidNotificationToken;
 
   UserModel({
     required this.uid,
@@ -15,6 +16,7 @@ class UserModel {
     required this.dateOfBirth,
     required this.gender,
     required this.timestamp,
+    required this.androidNotificationToken,
   });
 
   factory UserModel.fromDoc(DocumentSnapshot doc) {
@@ -25,6 +27,7 @@ class UserModel {
       dateOfBirth: doc['dateOfBirth'],
       gender: doc['gender'],
       timestamp: doc['timestamp'],
+      androidNotificationToken: doc['androidNotificationToken'],
     );
   }
 }
