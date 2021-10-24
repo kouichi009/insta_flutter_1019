@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_flutter02/screens/camera_screen.dart';
 import 'package:instagram_flutter02/screens/edit_profile_screen.dart';
+import 'package:instagram_flutter02/screens/news_api/test3.dart';
 import 'package:instagram_flutter02/screens/profile_screen.dart';
 import 'package:instagram_flutter02/screens/sign_up_screen.dart';
 import 'package:instagram_flutter02/screens/test2.dart';
@@ -150,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
           CameraScreen(currentUid: widget.currentUid),
           ProfileScreen(currentUid: widget.currentUid),
           SignUpScreen(),
-          Test2(),
+          Test3(),
         ],
         controller: pageController,
         onPageChanged: onPageChanged,

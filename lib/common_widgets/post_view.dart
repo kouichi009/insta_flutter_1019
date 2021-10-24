@@ -275,6 +275,9 @@ class _PostViewState extends State<PostView> {
         buildPostImage(),
         buildPostHeader(),
         buildPostFooter(),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 50),
+        ),
       ],
     );
   }
