@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_flutter02/common_widgets/post_view.dart';
 import 'package:instagram_flutter02/models/post.dart';
@@ -13,62 +14,116 @@ class TimelineScreen extends StatefulWidget {
 }
 
 class _TimelineScreenState extends State<TimelineScreen> {
-  List<Post> _posts = [];
+  FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  List<Post> _posts = []; // stores fetched products
+  bool isLoading = false; // track if products fetching
+  bool hasMore = true; // flag for more products available or not
+  int documentLimit = 10; // documents to be fetched per request
+  DocumentSnapshot?
+      lastDocument; // flag for last document from where next 10 records to be fetched
+  ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    queryPosts();
+    _scrollController.addListener(() {
+      double maxScroll = _scrollController.position.maxScrollExtent;
+      double currentScroll = _scrollController.position.pixels;
+      double delta = MediaQuery.of(context).size.height * 0.20;
+      if (maxScroll - currentScroll <= delta) {
+        getProducts();
+      }
+    });
+    getProducts();
   }
 
-  queryPosts() async {
-    List<Post> posts = await PostService.query();
-    if (!mounted) return;
+  getProducts() async {
+    if (!hasMore) {
+      print('No More Products');
+      return;
+    }
+    if (isLoading) {
+      return;
+    }
     setState(() {
-      _posts = posts;
+      isLoading = true;
+    });
+    QuerySnapshot querySnapshot;
+    if (lastDocument == null) {
+      querySnapshot = await _firestore
+          .collection('posts')
+          .orderBy('timestamp')
+          .limit(documentLimit)
+          .get();
+    } else {
+      querySnapshot = await _firestore
+          .collection('posts')
+          .orderBy('timestamp')
+          .startAfterDocument(lastDocument!)
+          .limit(documentLimit)
+          .get();
+      print(1);
+    }
+    if (querySnapshot.docs.length < documentLimit) {
+      hasMore = false;
+    }
+    lastDocument = querySnapshot.docs[querySnapshot.docs.length - 1];
+    _posts.addAll(querySnapshot.docs.map((doc) => Post.fromDoc(doc)).toList());
+    setState(() {
+      isLoading = false;
     });
   }
 
-  method1() async {
-    List<Post> posts = await PostService.query();
-    print(
-        'method1@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ $posts ${posts.length}');
-
-    posts.forEach((post) {
-      print('${post.id} ${post.caption}');
-    });
-    // posts.map((post) {
-    //   print('888 ${post.id} ${post.caption}');
-    // });
-    print('Loopから脱出 1');
-
-    // posts.map(
-    //     (post) => print('123 postId: ${post.id} caption: ${post.caption}'));
-
-    List<String> mixFruit = ['apple', 'banana', 'grape', 'orange'];
-
-    mixFruit.forEach((fruit) {
-      print(fruit);
-    });
-    print('Loopから脱出 2');
-  }
+  // queryPosts() async {
+  //   List<Post> posts = await PostService.query();
+  //   if (!mounted) return;
+  //   setState(() {
+  //     _posts = posts;
+  //   });
+  // }
 
   Widget _buildDisplayPosts() {
     // Column
     List<PostView> postViews = [];
-    _posts.forEach((post) {
-      // postViews.add(PostView(
-      //   postStatus: PostStatus.feedPost,
-      //   currentUserId: widget.currentUserId,
-      //   post: post,
-      //   author: _profileUser,
-      // ));
-      postViews.add(PostView(currentUid: widget.currentUid, post: post));
-    });
-    // return Text('654123');
-    return ListView(
-      children: postViews,
-    );
+    // _posts.forEach((post) {
+    //   postViews.add(PostView(currentUid: widget.currentUid, post: post));
+    // });
+    return Column(children: [
+      Expanded(
+        child: _posts.length == 0
+            ? Center(
+                child: Text('No Data...'),
+              )
+            : ListView.builder(
+                controller: _scrollController,
+                itemCount: _posts.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    contentPadding: EdgeInsets.all(5),
+                    title: Text(_posts[index].caption),
+                    subtitle: Text(_posts[index].id),
+                  );
+                },
+              ),
+      ),
+      isLoading
+          ? Container(
+              width: MediaQuery.of(context).size.width,
+              padding: EdgeInsets.all(5),
+              color: Colors.yellowAccent,
+              child: Text(
+                'Loading',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            )
+          : Container()
+    ]);
+    // return ListView(
+    //   children: postViews,
+    // );
   }
 
   @override
@@ -78,7 +133,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
           title: Text('FutureBuilder Demo'),
         ),
         body: RefreshIndicator(
-            onRefresh: () => queryPosts(), child: _buildDisplayPosts()));
+            onRefresh: () => getProducts(), child: _buildDisplayPosts()));
     // body: FutureBuilder(
     //   future: PostService.query(),
     //   builder: (BuildContext context, AsyncSnapshot snapshot) {
