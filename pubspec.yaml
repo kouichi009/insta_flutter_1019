@@ -46,6 +46,7 @@ dependencies:
   flutter_holo_date_picker: any
   http: ^0.13.4
   flutter_dotenv: ^5.0.2
+  ionicons: ^0.1.2
 
 dev_dependencies:
   flutter_test:
