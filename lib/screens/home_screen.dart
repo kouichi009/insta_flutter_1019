@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:instagram_flutter02/screens/camera_screen.dart';
 import 'package:instagram_flutter02/screens/edit_profile_screen.dart';
 import 'package:instagram_flutter02/screens/news_api/test3.dart';
+import 'package:instagram_flutter02/screens/news_api/test4.dart';
+import 'package:instagram_flutter02/screens/news_api/test5.dart';
 import 'package:instagram_flutter02/screens/profile_screen.dart';
 import 'package:instagram_flutter02/screens/sign_up_screen.dart';
 import 'package:instagram_flutter02/screens/test2.dart';
@@ -151,7 +153,8 @@ class _HomeScreenState extends State<HomeScreen> {
           CameraScreen(currentUid: widget.currentUid),
           ProfileScreen(currentUid: widget.currentUid),
           SignUpScreen(),
-          Test3(),
+          Test4(),
+          Test5(),
         ],
         controller: pageController,
         onPageChanged: onPageChanged,
@@ -172,6 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
             BottomNavigationBarItem(icon: Icon(Icons.account_circle)),
             BottomNavigationBarItem(icon: Icon(Icons.email)),
             BottomNavigationBarItem(icon: Icon(Icons.email)),
+            BottomNavigationBarItem(icon: Icon(Icons.account_circle)),
           ]),
     );
   }

@@ -89,45 +89,55 @@ class PostService {
     return posts;
   }
 
-  // static Future<void> signUpUser(
-  //     BuildContext context, String name, String email, String password) async {
-  //   try {
-  //     UserCredential userCredential = await FirebaseAuth.instance
-  //         .createUserWithEmailAndPassword(email: email, password: password);
-  //     User? signedInUser = userCredential.user;
-  //     String uid = signedInUser!.uid;
+  static Future<void> likePost(String? currentUid, Post? post) async {
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+    DocumentSnapshot doc = await postsRef.doc(post?.id).get();
+    int likeCount = doc['likeCount'];
+    batch.update(postsRef.doc(post?.id), {
+      'likeCount': likeCount + 1,
+      'likes.${currentUid}': true,
+    });
 
-  //     _firestore.collection('/users').doc(uid).set({
-  //       'name': name,
-  //       'email': email,
-  //       'profileImageUrl':
-  //           'https://applimura.com/wp-content/uploads/2019/08/twittericon13.jpg',
-  //       'timestamp': timestamp,
-  //       'gender': 'man',
-  //       'dateOfBirth': '1988年9月8日',
-  //       'uid': uid
-  //     });
-  //     // Navigator.pop(context);
-  //     print('auth success22 $uid');
-  //   } on FirebaseAuthException catch (e) {
-  //     if (e.code == 'weak-password') {
-  //       print('The password provided is too weak.');
-  //     } else if (e.code == 'email-already-in-use') {
-  //       print('The account already exists for that email.');
-  //     }
-  //   } catch (e) {
-  //     print(e);
-  //   }
-  // }
+    batch.set(usersRef.doc(currentUid).collection('likedPosts').doc(post?.id), {
+      'postId': post?.id,
+      'isLiked': true,
+      'timestamp': timestamp,
+      'uid': post?.uid
+    });
 
-  // static Future<void> loginUser(String email, String password) async {
-  //   try {
-  //     print('login user@@@@@@@ $email $password');
-  //     await _auth.signInWithEmailAndPassword(
-  //         email: '2@gmail.com', password: '123456');
-  //     print("login success@@@@@@@");
-  //   } on PlatformException catch (err) {
-  //     throw (err);
-  //   }
-  // }
+    await batch.commit();
+  }
+
+  static Future<void> unLikePost(String? currentUid, Post? post) async {
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+    DocumentSnapshot doc = await postsRef.doc(post?.id).get();
+    int likeCount = doc['likeCount'];
+    batch.update(postsRef.doc(post?.id), {
+      'likeCount': likeCount - 1,
+      'likes.${currentUid}': false,
+    });
+
+    batch.update(
+        usersRef.doc(currentUid).collection('likedPosts').doc(post?.id), {
+      'isLiked': false,
+      'timestamp': timestamp,
+    });
+
+    await batch.commit();
+  }
+
+  static Future<Map> getLatestPost(post) async {
+    List futureDocs = await Future.wait([
+      postsRef.doc(post.id).get(),
+      usersRef.doc(post.uid).get(),
+    ]);
+
+    final latestPostDoc = futureDocs[0];
+    final latestUserModelDoc = futureDocs[1];
+
+    Post latestPost = Post.fromDoc(latestPostDoc);
+    UserModel latestUserModel = UserModel.fromDoc(latestUserModelDoc);
+
+    return {'latestPost': latestPost, 'latestUserModel': latestUserModel};
+  }
 }

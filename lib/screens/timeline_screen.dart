@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:instagram_flutter02/common_widgets/post_view.dart';
 import 'package:instagram_flutter02/models/post.dart';
 import 'package:instagram_flutter02/models/user_model.dart';
+import 'package:instagram_flutter02/screens/post_detail_screen.dart';
 import 'package:instagram_flutter02/services/api/auth_service.dart';
 import 'package:instagram_flutter02/services/api/post_service.dart';
 
@@ -34,13 +35,13 @@ class _TimelineScreenState extends State<TimelineScreen> {
       double currentScroll = _scrollController.position.pixels;
       double delta = MediaQuery.of(context).size.height * 0.20;
       if (maxScroll - currentScroll <= delta) {
-        getProducts();
+        getPosts();
       }
     });
-    getProducts();
+    getPosts();
   }
 
-  getProducts() async {
+  getPosts() async {
     if (!_hasMore) {
       print('No More Products');
       return;
@@ -81,10 +82,20 @@ class _TimelineScreenState extends State<TimelineScreen> {
                 controller: _scrollController,
                 itemCount: _posts.length,
                 itemBuilder: (context, index) {
-                  return PostView(
-                    currentUid: widget.currentUid,
-                    userModel: _userModels[index],
-                    post: _posts[index],
+                  return new GestureDetector(
+                    //You need to make my child interactive
+                    onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PostDetailScreen(
+                              currentUid: widget.currentUid,
+                              post: _posts[index]),
+                        )),
+                    child: PostView(
+                      currentUid: widget.currentUid,
+                      userModel: _userModels[index],
+                      post: _posts[index],
+                    ),
                   );
                 },
               ),
