@@ -21,6 +21,7 @@ class AuthService {
           .createUserWithEmailAndPassword(email: email, password: password);
       User? signedInUser = userCredential.user;
       String uid = signedInUser!.uid;
+      final timestamp = FieldValue.serverTimestamp();
 
       usersRef.doc(uid).set({
         'name': name,
@@ -31,7 +32,8 @@ class AuthService {
         'gender': '',
         'dateOfBirth': {'year': '', 'month': '', 'day': ''},
         'uid': uid,
-        'androidNotificationToken': ''
+        'androidNotificationToken': '',
+        'status': 1
       });
       // Navigator.pop(context);
       print('auth success22 $uid');

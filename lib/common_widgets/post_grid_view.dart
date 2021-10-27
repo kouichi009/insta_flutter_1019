@@ -31,14 +31,31 @@ class _PostGridViewState extends State<PostGridView> {
     );
   }
 
+  goToDetailPost(post) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            PostDetailScreen(currentUid: widget.currentUid, post: post),
+      ),
+    );
+    print(result);
+    print('aaa: ${widget.posts!.length}');
+    if (result != null) {
+      for (var i = 0; i < widget.posts!.length; i++) {
+        print(i);
+        if (post.id == widget.posts![i].id) {
+          widget.posts!.removeAt(i);
+        }
+      }
+      print('ループから脱出 ${post.id}: ${widget.posts!.length}');
+      setState(() {});
+    }
+  }
+
   PostTile(post) {
     return GestureDetector(
-      onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) =>
-                PostDetailScreen(currentUid: widget.currentUid, post: post),
-          )),
+      onTap: () => goToDetailPost(post),
       child: customCachedImage(post.photoUrl),
     );
   }

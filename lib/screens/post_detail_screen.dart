@@ -29,8 +29,6 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   }
 
   getLatestPost() async {
-    var b = widget.post;
-    var c = widget.currentUid;
     Map latestObj = await PostService.getLatestPost(widget.post);
     _latestPost = latestObj['latestPost'];
     _latestUserModel = latestObj['latestUserModel'];
@@ -39,7 +37,15 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     });
   }
 
+  deletePost(context) async {
+    await PostService.deletePost(widget.post);
+    Navigator.pop(context);
+    Navigator.pop(context, _latestPost);
+  }
+
   handleDeletePost(BuildContext parentContext) {
+    // Navigator.pop(parentContext);
+    // return;
     return showDialog(
         context: parentContext,
         builder: (context) {
@@ -48,8 +54,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
             children: <Widget>[
               SimpleDialogOption(
                   onPressed: () {
-                    Navigator.pop(context);
-                    // deletePost();
+                    deletePost(context);
                   },
                   child: Text(
                     'Delete',

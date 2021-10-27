@@ -76,7 +76,7 @@ class _Test3State extends State<Test3> {
   int count = 0;
 
   uploadFirestore() {
-    for (var i = 0; i < 107; i++) {
+    for (var i = 0; i < 10; i++) {
       print(i);
       final downloadUrl =
           'https://firebasestorage.googleapis.com/v0/b/instagram-flutter-kadai.appspot.com/o/post_dcb7e750-d4db-4608-9c65-aaa223fc7716.jpg?alt=media&token=a356e1a3-2112-4fd7-8fff-d98b68c8ac68';
@@ -87,9 +87,10 @@ class _Test3State extends State<Test3> {
         "uid": 'g32hXuaRCkbueZZUJVJj6NxtiAo2',
         "photoUrl": downloadUrl,
         "likeCount": 0,
-        "timestamp": Timestamp.now(),
+        "timestamp": FieldValue.serverTimestamp(),
         "caption": '$i caption',
         "likes": {},
+        'status': 1,
       });
     }
     print('ループから脱出');

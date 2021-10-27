@@ -53,7 +53,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
     setState(() {
       _isLoading = true;
     });
-
+    print('object');
     Map values =
         await PostService.queryTimeline(documentLimit, _lastDocument, _hasMore);
 
@@ -71,7 +71,6 @@ class _TimelineScreenState extends State<TimelineScreen> {
 
   Widget _buildDisplayPosts() {
     List<PostView> postViews = [];
-
     return Column(children: [
       Expanded(
         child: _posts.length == 0
@@ -84,13 +83,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
                 itemBuilder: (context, index) {
                   return new GestureDetector(
                     //You need to make my child interactive
-                    onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => PostDetailScreen(
-                              currentUid: widget.currentUid,
-                              post: _posts[index]),
-                        )),
+                    onTap: () => goToPostDetail(context, index),
                     child: PostView(
                       currentUid: widget.currentUid,
                       userModel: _userModels[index],
@@ -115,6 +108,18 @@ class _TimelineScreenState extends State<TimelineScreen> {
             )
           : Container()
     ]);
+  }
+
+  goToPostDetail(context, index) async {
+    final result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PostDetailScreen(
+              currentUid: widget.currentUid, post: _posts[index]),
+        ));
+    if (result != null) {
+      refresh();
+    }
   }
 
   refresh() async {

@@ -27,11 +27,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    queryMyPosts();
+    queryUserPosts();
   }
 
-  queryMyPosts() async {
-    List<Post> posts = await PostService.queryMyPosts(widget.currentUid);
+  queryUserPosts() async {
+    List<Post> posts = await PostService.queryUserPosts(widget.currentUid);
     if (!mounted) return;
     setState(() {
       _posts = posts;
@@ -154,7 +154,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
         IconButton(
-          onPressed: () => queryMyPosts(),
+          onPressed: () => queryUserPosts(),
           icon: Icon(Icons.account_circle),
           color: postType == MYPOSTS
               ? Theme.of(context).primaryColor
@@ -169,13 +169,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  goToEditProfile(userModel) {
+  goToEditProfile(userModel) async {
     print('goToEditProfile@@@@@@@@@#####: ${userModel.name}');
-    Navigator.push(
+    await Navigator.push(
         context,
         MaterialPageRoute(
             builder: (context) =>
                 EditProfileScreen(currentUid: userModel.uid)));
+    setState(() {});
   }
 
   Widget _buildGridPosts() {

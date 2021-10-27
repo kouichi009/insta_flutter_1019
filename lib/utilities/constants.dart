@@ -6,5 +6,3 @@ final MYPOSTS = 'MYPOSTS';
 final FAV = 'FAV';
 final MALE = 'male';
 final FEMALE = 'female';
-final DateTime timestamp = DateTime.now();
-// timestampは機能してない。

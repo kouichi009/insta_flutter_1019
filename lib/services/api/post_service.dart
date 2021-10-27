@@ -21,13 +21,15 @@ class PostService {
     if (lastDocument == null) {
       querySnapshot = await _firestore
           .collection('posts')
-          .orderBy('timestamp')
+          .where('status', isEqualTo: 1)
+          .orderBy('timestamp', descending: true)
           .limit(documentLimit)
           .get();
     } else {
       querySnapshot = await _firestore
           .collection('posts')
-          .orderBy('timestamp')
+          .where('status', isEqualTo: 1)
+          .orderBy('timestamp', descending: true)
           .startAfterDocument(lastDocument!)
           .limit(documentLimit)
           .get();
@@ -36,19 +38,20 @@ class PostService {
     if (querySnapshot.docs.length < documentLimit) {
       hasMore = false;
     }
-    lastDocument = querySnapshot.docs[querySnapshot.docs.length - 1];
-    await Future.wait(querySnapshot.docs.map((doc) async {
-      Post post = Post.fromDoc(doc);
-      print('aaaaaaaaaaaaggggggg $doc');
-      String postUid = doc['uid'];
-      print('postUid: $postUid');
-      DocumentSnapshot documentSnapshot = await usersRef.doc(postUid).get();
-      UserModel userModel = UserModel.fromDoc(documentSnapshot);
-      posts.add(post);
-      userModels.add(userModel);
-    }));
-    // _posts.addAll(querySnapshot.docs.map((doc) => Post.fromDoc(doc)).toList());
-    ////////////////////////////////////////////////////////////
+    print(querySnapshot);
+    print(querySnapshot.docs);
+    print(querySnapshot.docs.length);
+    if (querySnapshot.docs.length > 0) {
+      lastDocument = querySnapshot.docs[querySnapshot.docs.length - 1];
+      await Future.wait(querySnapshot.docs.map((doc) async {
+        Post post = Post.fromDoc(doc);
+        String postUid = doc['uid'];
+        DocumentSnapshot documentSnapshot = await usersRef.doc(postUid).get();
+        UserModel userModel = UserModel.fromDoc(documentSnapshot);
+        posts.add(post);
+        userModels.add(userModel);
+      }));
+    }
     print('finish');
     return {
       'posts': posts,
@@ -58,10 +61,11 @@ class PostService {
     };
   }
 
-  static Future<List<Post>> queryMyPosts(currentUid) async {
+  static Future<List<Post>> queryUserPosts(userId) async {
     QuerySnapshot snapshot = await postsRef
-        .where("uid", isEqualTo: currentUid)
-        .orderBy("timestamp", descending: true)
+        .where('uid', isEqualTo: userId)
+        .where('status', isEqualTo: 1)
+        .orderBy('timestamp', descending: true)
         .get();
 
     List<Post> posts = snapshot.docs.map((doc) => Post.fromDoc(doc)).toList();
@@ -73,8 +77,9 @@ class PostService {
     QuerySnapshot snapshot = await usersRef
         .doc(currentUid)
         .collection('likedPosts')
-        .where("isLiked", isEqualTo: true)
-        .orderBy("timestamp", descending: true)
+        .where('isLiked', isEqualTo: true)
+        .where('status', isEqualTo: 1)
+        .orderBy('timestamp', descending: true)
         .get();
     print('snap@@@@@@@: $snapshot ${snapshot.size} ${snapshot.docs}');
     await Future.wait(snapshot.docs.map((doc) async {
@@ -83,7 +88,8 @@ class PostService {
       print('postID: $postId');
       DocumentSnapshot documentSnapshot = await postsRef.doc(postId).get();
       Post post = Post.fromDoc(documentSnapshot);
-      posts.add(post);
+      posts.insert(0, post);
+      // posts.add(post);
     }));
     print('finish');
     return posts;
@@ -93,6 +99,8 @@ class PostService {
     WriteBatch batch = FirebaseFirestore.instance.batch();
     DocumentSnapshot doc = await postsRef.doc(post?.id).get();
     int likeCount = doc['likeCount'];
+    final timestamp = FieldValue.serverTimestamp();
+
     batch.update(postsRef.doc(post?.id), {
       'likeCount': likeCount + 1,
       'likes.${currentUid}': true,
@@ -102,7 +110,8 @@ class PostService {
       'postId': post?.id,
       'isLiked': true,
       'timestamp': timestamp,
-      'uid': post?.uid
+      'uid': post?.uid,
+      'status': 1
     });
 
     await batch.commit();
@@ -112,6 +121,8 @@ class PostService {
     WriteBatch batch = FirebaseFirestore.instance.batch();
     DocumentSnapshot doc = await postsRef.doc(post?.id).get();
     int likeCount = doc['likeCount'];
+    final timestamp = FieldValue.serverTimestamp();
+
     batch.update(postsRef.doc(post?.id), {
       'likeCount': likeCount - 1,
       'likes.${currentUid}': false,
@@ -124,6 +135,34 @@ class PostService {
     });
 
     await batch.commit();
+  }
+
+  static Future uploadPost(postId, currentUid, downloadUrl, caption) async {
+    final timestamp = FieldValue.serverTimestamp();
+    await postsRef.doc(postId).set({
+      "id": postId,
+      "uid": currentUid,
+      "photoUrl": downloadUrl,
+      "likeCount": 0,
+      "timestamp": timestamp,
+      "caption": caption,
+      "likes": {},
+      'status': 1
+    });
+    print('upload1@@@@@');
+  }
+
+  static Future deletePost(post) async {
+    await postsRef.doc(post.id).update({'status': 2});
+    final likes = post.likes;
+    List likeUids = likes.keys.toList();
+    likeUids.forEach((likeUid) {
+      usersRef
+          .doc(likeUid)
+          .collection('likedPosts')
+          .doc(post.id)
+          .update({'status': 2});
+    });
   }
 
   static Future<Map> getLatestPost(post) async {

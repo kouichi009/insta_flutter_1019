@@ -8,6 +8,7 @@ class Post {
   final dynamic likes;
   final int likeCount;
   final Timestamp timestamp;
+  final int status;
 
   Post({
     required this.id,
@@ -17,6 +18,7 @@ class Post {
     required this.likes,
     required this.likeCount,
     required this.timestamp,
+    required this.status,
   });
 
   factory Post.fromDoc(DocumentSnapshot doc) {
@@ -28,6 +30,7 @@ class Post {
       likes: doc['likes'],
       likeCount: doc['likeCount'],
       timestamp: doc['timestamp'],
+      status: doc['status'],
     );
   }
 }

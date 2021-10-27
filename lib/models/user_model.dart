@@ -8,6 +8,7 @@ class UserModel {
   final String gender;
   final Timestamp timestamp;
   final String androidNotificationToken;
+  final int status;
 
   UserModel({
     required this.uid,
@@ -17,6 +18,7 @@ class UserModel {
     required this.gender,
     required this.timestamp,
     required this.androidNotificationToken,
+    required this.status,
   });
 
   factory UserModel.fromDoc(DocumentSnapshot doc) {
@@ -28,6 +30,7 @@ class UserModel {
       gender: doc['gender'],
       timestamp: doc['timestamp'],
       androidNotificationToken: doc['androidNotificationToken'],
+      status: doc['status'],
     );
   }
 }

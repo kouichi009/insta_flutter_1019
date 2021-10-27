@@ -2,7 +2,10 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:instagram_flutter02/common_widgets/progress.dart';
 import 'package:instagram_flutter02/common_widgets/select_image_dialog.dart';
+import 'package:instagram_flutter02/screens/launch_screen.dart';
+import 'package:instagram_flutter02/services/api/post_service.dart';
 import 'package:instagram_flutter02/utilities/constants.dart';
 import 'package:instagram_flutter02/utilities/themes.dart';
 import 'package:uuid/uuid.dart';
@@ -22,8 +25,8 @@ class _CameraScreenState extends State<CameraScreen> {
   TextEditingController captionController = TextEditingController();
 
   File? file;
-  bool isUploading = false;
   String postId = Uuid().v4();
+  bool isUploading = false;
 
   Scaffold buildUploadForm() {
     return Scaffold(
@@ -36,7 +39,7 @@ class _CameraScreenState extends State<CameraScreen> {
       ),
       body: ListView(
         children: <Widget>[
-          // isUploading ? Text("13") : Text(""),
+          isUploading ? linearProgress() : Text(""),
           GestureDetector(
             onTap: () {
               print("Container clicked");
@@ -79,7 +82,6 @@ class _CameraScreenState extends State<CameraScreen> {
           Padding(
             padding: EdgeInsets.only(top: 10.0),
           ),
-
           Container(
             padding: const EdgeInsets.all(5.0),
             child: TextField(
@@ -91,14 +93,12 @@ class _CameraScreenState extends State<CameraScreen> {
               ),
             ),
           ),
-
           SizedBox(height: 20.0),
           Container(
             padding: const EdgeInsets.all(35.0),
             height: 130.0,
             child: FlatButton(
-              onPressed: () => upload(),
-              // print('push login button@@@@@'),
+              onPressed: isUploading ? null : () => upload(),
               color: Colors.orange,
               padding: const EdgeInsets.all(10.0),
               child: Text(
@@ -109,14 +109,6 @@ class _CameraScreenState extends State<CameraScreen> {
               ),
             ),
           ),
-          // ButtonTheme(
-          //   width: 50.0,
-          //   height: 100.0,
-          //   child: RaisedButton(
-          //     onPressed: () {},
-          //     child: Text("test"),
-          //   ),
-          // ),
         ],
       ),
     );
@@ -174,18 +166,23 @@ class _CameraScreenState extends State<CameraScreen> {
   }
 
   upload() async {
+    setState(() {
+      isUploading = true;
+    });
     final downloadUrl = await uploadImage(this.file);
     print(widget.currentUid);
-
-    postsRef.doc(postId).set({
-      "id": postId,
-      "uid": widget.currentUid,
-      "photoUrl": downloadUrl,
-      "likeCount": 0,
-      "timestamp": timestamp,
-      "caption": captionController.text,
-      "likes": {},
+    await PostService.uploadPost(
+        postId, widget.currentUid, downloadUrl, captionController.text);
+    setState(() {
+      isUploading = false;
     });
+    print('upload2@@@@@');
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => LaunchScreen()),
+      (Route<dynamic> route) => false,
+    );
   }
 
   @override
