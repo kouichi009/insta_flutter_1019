@@ -43,14 +43,21 @@ class PostService {
     print(querySnapshot.docs.length);
     if (querySnapshot.docs.length > 0) {
       lastDocument = querySnapshot.docs[querySnapshot.docs.length - 1];
-      await Future.wait(querySnapshot.docs.map((doc) async {
+      print('start');
+      await Future.forEach<QueryDocumentSnapshot<Object?>>(querySnapshot.docs,
+          (doc) async {
         Post post = Post.fromDoc(doc);
+        print('test2 ${post.id} ${post.caption} ${post}');
         String postUid = doc['uid'];
+        print('middle 1 ${post.caption}');
+
         DocumentSnapshot documentSnapshot = await usersRef.doc(postUid).get();
         UserModel userModel = UserModel.fromDoc(documentSnapshot);
+        print('middle 2 ${userModel.name}');
+
         posts.add(post);
         userModels.add(userModel);
-      }));
+      });
     }
     print('finish');
     return {
@@ -82,15 +89,16 @@ class PostService {
         .orderBy('timestamp', descending: true)
         .get();
     print('snap@@@@@@@: $snapshot ${snapshot.size} ${snapshot.docs}');
-    await Future.wait(snapshot.docs.map((doc) async {
+    await Future.forEach<QueryDocumentSnapshot<Object?>>(snapshot.docs,
+        (doc) async {
       print('aaaaaaaaaaaaggggggg $doc');
       String postId = doc['postId'];
       print('postID: $postId');
       DocumentSnapshot documentSnapshot = await postsRef.doc(postId).get();
       Post post = Post.fromDoc(documentSnapshot);
-      posts.insert(0, post);
-      // posts.add(post);
-    }));
+      print(post.caption);
+      posts.add(post);
+    });
     print('finish');
     return posts;
   }

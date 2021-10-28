@@ -6,6 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:instagram_flutter02/common_widgets/custom_cached_image.dart';
 import 'package:instagram_flutter02/models/post.dart';
 import 'package:instagram_flutter02/models/user_model.dart';
+import 'package:instagram_flutter02/screens/profile_screen.dart';
 import 'package:instagram_flutter02/services/api/post_service.dart';
 import 'package:instagram_flutter02/utilities/constants.dart';
 import 'package:instagram_flutter02/utilities/themes.dart';
@@ -79,6 +80,14 @@ class _PostViewState extends State<PostView> {
     });
   }
 
+  goToProfilePage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => ProfileScreen(uid: widget.post?.uid)),
+    );
+  }
+
   Widget buildText() {
     final maxLines = isReadMore ? null : 2;
     final overflow = isReadMore ? TextOverflow.visible : TextOverflow.ellipsis;
@@ -145,7 +154,7 @@ class _PostViewState extends State<PostView> {
           Container(
             child: ListTile(
               leading: GestureDetector(
-                onTap: () => null,
+                onTap: () => goToProfilePage(),
                 child: CircleAvatar(
                   backgroundColor: Colors.grey,
                   backgroundImage: CachedNetworkImageProvider(
@@ -154,7 +163,7 @@ class _PostViewState extends State<PostView> {
                 ),
               ),
               title: GestureDetector(
-                onTap: () => null,
+                onTap: () => goToProfilePage(),
                 child: Row(
                   children: [
                     Text(

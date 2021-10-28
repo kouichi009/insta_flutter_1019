@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_flutter02/common_widgets/header.dart';
 import 'package:instagram_flutter02/common_widgets/post_grid_view.dart';
@@ -13,8 +14,8 @@ import 'package:instagram_flutter02/utilities/constants.dart';
 import 'package:instagram_flutter02/utilities/themes.dart';
 
 class ProfileScreen extends StatefulWidget {
-  String? currentUid;
-  ProfileScreen({this.currentUid});
+  String? uid;
+  ProfileScreen({this.uid});
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
@@ -23,6 +24,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   String postType = '';
   List<Post> _posts = [];
+  String currentUid = '';
 
   @override
   void initState() {
@@ -31,7 +33,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   queryUserPosts() async {
-    List<Post> posts = await PostService.queryUserPosts(widget.currentUid);
+    currentUid = FirebaseAuth.instance.currentUser!.uid;
+    print(currentUid);
+    print(widget.uid);
+    List<Post> posts = await PostService.queryUserPosts(widget.uid);
     if (!mounted) return;
     setState(() {
       _posts = posts;
@@ -40,7 +45,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   queryLikedPosts() async {
-    List<Post> posts = await PostService.queryLikedPosts(widget.currentUid);
+    List<Post> posts = await PostService.queryLikedPosts(widget.uid);
     if (!mounted) return;
     setState(() {
       postType = FAV;
@@ -50,7 +55,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   buildProfileHeader() {
     return FutureBuilder(
-        future: usersRef.doc(widget.currentUid).get(),
+        future: usersRef.doc(widget.uid).get(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (!snapshot.hasData) {
             // return circularProgress();
@@ -85,31 +90,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               // buildCountColumn("following", followingCount),
                             ],
                           ),
-                          Container(
-                            padding: EdgeInsets.only(top: 2.0),
-                            child: FlatButton(
-                              onPressed: () => goToEditProfile(userModel),
-                              child: Container(
-                                width: 250.0,
-                                height: 35.0,
-                                child: Text(
-                                  'プロフィール編集',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
+                          if (widget.uid == currentUid)
+                            Container(
+                              padding: EdgeInsets.only(top: 2.0),
+                              child: FlatButton(
+                                onPressed: () => goToEditProfile(userModel),
+                                child: Container(
+                                  width: 250.0,
+                                  height: 35.0,
+                                  child: Text(
+                                    'プロフィール編集',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                ),
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  color: Colors.blue,
-                                  border: Border.all(
-                                    color: Colors.grey,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue,
+                                    border: Border.all(
+                                      color: Colors.grey,
+                                    ),
+                                    borderRadius: BorderRadius.circular(5.0),
                                   ),
-                                  borderRadius: BorderRadius.circular(5.0),
                                 ),
                               ),
                             ),
-                          ),
                         ],
                       ),
                     ),
@@ -120,34 +126,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           );
         });
   }
-
-  // Container buildButton({String? text, Function? function}) {
-  //   return Container(
-  //     padding: EdgeInsets.only(top: 2.0),
-  //     child: FlatButton(
-  //       onPressed: function!(),
-  //       child: Container(
-  //         width: 250.0,
-  //         height: 27.0,
-  //         child: Text(
-  //           text!,
-  //           style: TextStyle(
-  //             color: true ? Colors.black : Colors.white,
-  //             fontWeight: FontWeight.bold,
-  //           ),
-  //         ),
-  //         alignment: Alignment.center,
-  //         decoration: BoxDecoration(
-  //           color: true ? Colors.white : Colors.blue,
-  //           border: Border.all(
-  //             color: true ? Colors.grey : Colors.blue,
-  //           ),
-  //           borderRadius: BorderRadius.circular(5.0),
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
 
   buildpostType() {
     return Row(
@@ -174,29 +152,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     await Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) =>
-                EditProfileScreen(currentUid: userModel.uid)));
+            builder: (context) => EditProfileScreen(currentUid: currentUid)));
     setState(() {});
   }
 
   Widget _buildGridPosts() {
-    // Column
-    return PostGridView(currentUid: widget.currentUid, posts: _posts);
-    List<PostView> postViews = [];
-    _posts.forEach((post) {
-      // postViews.add(PostView(
-      //   postStatus: PostStatus.feedPost,
-      //   currentUserId: widget.currentUserId,
-      //   post: post,
-      //   author: _profileUser,
-      // ));
-      postViews.add(
-          PostView(currentUid: 'YMLw3UroqWQ4XnxO3YoKqQQYgdD3', post: post));
-    });
-    // return Text('654123');
-    return Column(
-      children: postViews,
-    );
+    return PostGridView(currentUid: currentUid, posts: _posts);
   }
 
   goToNewsApiPage() {
