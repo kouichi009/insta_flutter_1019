@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:instagram_flutter02/common_widgets/app_header.dart';
 import 'package:instagram_flutter02/common_widgets/post_view.dart';
 import 'package:instagram_flutter02/models/post.dart';
 import 'package:instagram_flutter02/models/user_model.dart';
@@ -139,8 +140,8 @@ class _TimelineScreenState extends State<TimelineScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text('FutureBuilder Demo'),
+        appBar: AppHeader(
+          isAppTitle: true,
         ),
         body: RefreshIndicator(
             onRefresh: () => refresh(), child: _buildDisplayPosts()));

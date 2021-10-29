@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:instagram_flutter02/common_widgets/header.dart';
+import 'package:instagram_flutter02/common_widgets/app_header.dart';
 import 'package:instagram_flutter02/common_widgets/post_grid_view.dart';
 import 'package:instagram_flutter02/common_widgets/post_view.dart';
 import 'package:instagram_flutter02/models/post.dart';
@@ -169,19 +169,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: header(context, titleText: "Profile"),
-      appBar: AppBar(
-        backgroundColor: Colors.white70,
-        title: Text(
-          "Caption Post",
-          style: TextStyle(color: Colors.black),
-        ),
-        actions: [
-          IconButton(
+      appBar: AppHeader(
+          isAppTitle: false,
+          titleText: 'マイページ',
+          actionWidget: IconButton(
               icon: Icon(Icons.check_circle_outline, color: Colors.black),
-              onPressed: () => goToNewsApiPage()),
-        ],
-      ),
+              onPressed: () => goToNewsApiPage())),
       body: ListView(
         children: <Widget>[
           buildProfileHeader(),

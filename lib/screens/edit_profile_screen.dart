@@ -5,7 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_holo_date_picker/flutter_holo_date_picker.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:instagram_flutter02/common_widgets/header.dart';
+import 'package:instagram_flutter02/common_widgets/app_header.dart';
 import 'package:instagram_flutter02/common_widgets/progress.dart';
 import 'package:instagram_flutter02/models/user_model.dart';
 import 'package:instagram_flutter02/services/api/auth_service.dart';
@@ -215,7 +215,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: header(context, titleText: "Profile"),
+      appBar: AppHeader(
+        isAppTitle: false,
+        titleText: 'プロフィール編集画面',
+      ),
       body: isLoading
           ? circularProgress()
           : ListView(

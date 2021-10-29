@@ -10,6 +10,7 @@ import 'package:instagram_flutter02/screens/profile_screen.dart';
 import 'package:instagram_flutter02/services/api/post_service.dart';
 import 'package:instagram_flutter02/utilities/constants.dart';
 import 'package:instagram_flutter02/utilities/themes.dart';
+import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 
 class PostView extends StatefulWidget {
@@ -173,7 +174,12 @@ class _PostViewState extends State<PostView> {
                   ],
                 ),
               ),
-              trailing: Text('投稿日時'),
+              trailing: Text(
+                DateFormat("yyyy/MM/dd")
+                    .format(widget.post!.timestamp.toDate())
+                    .toString(),
+                style: TextStyle(fontSize: 16.0, color: Colors.black),
+              ),
             ),
           ),
 

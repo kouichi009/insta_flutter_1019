@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:instagram_flutter02/common_widgets/app_header.dart';
 import 'package:instagram_flutter02/common_widgets/progress.dart';
 import 'package:instagram_flutter02/common_widgets/select_image_dialog.dart';
 import 'package:instagram_flutter02/screens/launch_screen.dart';
@@ -30,12 +31,9 @@ class _CameraScreenState extends State<CameraScreen> {
 
   Scaffold buildUploadForm() {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white70,
-        title: Text(
-          "Caption Post",
-          style: TextStyle(color: Colors.black),
-        ),
+      appBar: AppHeader(
+        isAppTitle: false,
+        titleText: '投稿ページ',
       ),
       body: ListView(
         children: <Widget>[
