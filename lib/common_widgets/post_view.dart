@@ -69,7 +69,6 @@ class _PostViewState extends State<PostView> {
           });
         }
 
-        print('like finish@');
       }
       isPushingLike = false;
     }

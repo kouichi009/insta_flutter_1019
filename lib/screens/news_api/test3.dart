@@ -38,7 +38,6 @@ class _Test3State extends State<Test3> {
 
   getProducts() async {
     if (!hasMore) {
-      print('No More Products');
       return;
     }
     if (isLoading) {
@@ -61,7 +60,6 @@ class _Test3State extends State<Test3> {
           .startAfterDocument(lastDocument!)
           .limit(documentLimit)
           .get();
-      print(1);
     }
     if (querySnapshot.docs.length < documentLimit) {
       hasMore = false;

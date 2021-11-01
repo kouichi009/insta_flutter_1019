@@ -18,26 +18,22 @@ class _LaunchScreenState extends State<LaunchScreen> {
       builder: (context, streamSnapshot) {
         // Authentication Connection Error
         // if (streamSnapshot.hasError) {
-        //   print("${streamSnapshot.error}");
         //   return ErrorSplash(
         //       text: "Something went wrong. Please try again later.");
         // }
 
         // Authentication Connection Successful -> Internet Connection Check
         if (streamSnapshot.connectionState == ConnectionState.active) {
-          print("Authentication Successful");
           User? currentUser = streamSnapshot.data as User?;
           // FirebaseAuth.instance.signOut();
 
           // No User
           if (currentUser != null) {
-            print("Auth user $currentUser");
             return HomeScreen(currentUid: currentUser.uid);
           }
 
           // // Unverified User
           // else if (!FirebaseAuth.instance.currentUser.emailVerified) {
-          //   print("Not Email Verified");
           //   timer = Timer.periodic(Duration(seconds: 3), (timer) async {
           //     checkEmailVerified();
           //   });
@@ -48,7 +44,6 @@ class _LaunchScreenState extends State<LaunchScreen> {
         }
 
         // UnAuthUser
-        print('unAuth');
         return LoginScreen();
       },
     );

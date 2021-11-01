@@ -24,8 +24,6 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   @override
   void initState() {
     super.initState();
-    print('${widget.currentUid} ${widget.post} ${widget.userModel}');
-    print('initS');
     getLatestPost();
   }
 

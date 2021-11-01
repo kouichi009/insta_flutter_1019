@@ -33,33 +33,24 @@ class PostService {
           .startAfterDocument(lastDocument!)
           .limit(documentLimit)
           .get();
-      print(1);
     }
     if (querySnapshot.docs.length < documentLimit) {
       hasMore = false;
     }
-    print(querySnapshot);
-    print(querySnapshot.docs);
-    print(querySnapshot.docs.length);
     if (querySnapshot.docs.length > 0) {
       lastDocument = querySnapshot.docs[querySnapshot.docs.length - 1];
-      print('start');
       await Future.forEach<QueryDocumentSnapshot<Object?>>(querySnapshot.docs,
           (doc) async {
         Post post = Post.fromDoc(doc);
-        print('test2 ${post.id} ${post.caption} ${post}');
         String postUid = doc['uid'];
-        print('middle 1 ${post.caption}');
 
         DocumentSnapshot documentSnapshot = await usersRef.doc(postUid).get();
         UserModel userModel = UserModel.fromDoc(documentSnapshot);
-        print('middle 2 ${userModel.name}');
 
         posts.add(post);
         userModels.add(userModel);
       });
     }
-    print('finish');
     return {
       'posts': posts,
       'userModels': userModels,
@@ -88,18 +79,13 @@ class PostService {
         .where('status', isEqualTo: 1)
         .orderBy('timestamp', descending: true)
         .get();
-    print('snap@@@@@@@: $snapshot ${snapshot.size} ${snapshot.docs}');
     await Future.forEach<QueryDocumentSnapshot<Object?>>(snapshot.docs,
         (doc) async {
-      print('aaaaaaaaaaaaggggggg $doc');
       String postId = doc['postId'];
-      print('postID: $postId');
       DocumentSnapshot documentSnapshot = await postsRef.doc(postId).get();
       Post post = Post.fromDoc(documentSnapshot);
-      print(post.caption);
       posts.add(post);
     });
-    print('finish');
     return posts;
   }
 
@@ -157,7 +143,6 @@ class PostService {
       "likes": {},
       'status': 1
     });
-    print('upload1@@@@@');
   }
 
   static Future deletePost(post) async {

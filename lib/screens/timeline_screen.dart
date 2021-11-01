@@ -44,7 +44,6 @@ class _TimelineScreenState extends State<TimelineScreen> {
 
   getPosts() async {
     if (!_hasMore) {
-      print('No More Products');
       return;
     }
     if (_isLoading) {
@@ -54,7 +53,6 @@ class _TimelineScreenState extends State<TimelineScreen> {
     setState(() {
       _isLoading = true;
     });
-    print('object');
     Map values =
         await PostService.queryTimeline(documentLimit, _lastDocument, _hasMore);
 

@@ -16,25 +16,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // Widget _getScreenId() {
-  //   return StreamBuilder(
-  //     stream: FirebaseAuth.instance.authStateChanges(),
-  //     builder: (BuildContext context, AsyncSnapshot snapshot) {
-  //       if (snapshot.connectionState == ConnectionState.waiting) {
-  //         //loading screen
-  //         print('Now loading@@@@@@@@@@@@');
-  //       }
-  //       if (snapshot.hasData) {
-  //         final uid = snapshot.data.uid;
-  //         return HomeScreen(
-  //           currentUid: uid,
-  //         );
-  //       } else {
-  //         // return LoginScreen();
-  //       }
-  //     },
-  //   );
-  // }
+
 
   @override
   Widget build(BuildContext context) {

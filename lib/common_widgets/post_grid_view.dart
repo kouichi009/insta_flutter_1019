@@ -39,16 +39,12 @@ class _PostGridViewState extends State<PostGridView> {
             PostDetailScreen(currentUid: widget.currentUid, post: post),
       ),
     );
-    print(result);
-    print('aaa: ${widget.posts!.length}');
     if (result != null) {
       for (var i = 0; i < widget.posts!.length; i++) {
-        print(i);
         if (post.id == widget.posts![i].id) {
           widget.posts!.removeAt(i);
         }
       }
-      print('ループから脱出 ${post.id}: ${widget.posts!.length}');
       setState(() {});
     }
   }

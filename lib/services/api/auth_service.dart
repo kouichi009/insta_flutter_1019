@@ -36,7 +36,6 @@ class AuthService {
         'status': 1
       });
       // Navigator.pop(context);
-      print('auth success22 $uid');
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         print('The password provided is too weak.');
@@ -50,10 +49,8 @@ class AuthService {
 
   static Future<void> loginUser(String email, String password) async {
     try {
-      print('login user@@@@@@@ $email $password');
       await _auth.signInWithEmailAndPassword(
           email: '2@gmail.com', password: '123456');
-      print("login success@@@@@@@");
     } on PlatformException catch (err) {
       throw (err);
     }

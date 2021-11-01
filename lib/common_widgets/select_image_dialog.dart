@@ -4,7 +4,6 @@ import 'package:image_picker/image_picker.dart';
 
 class SelectImageDialog {
   static selectImage(context) {
-    print("selectImage@@@@@@@@@@@@@@656+5 $context");
     return showDialog(
       context: context,
       builder: (context) {
@@ -28,7 +27,6 @@ class SelectImageDialog {
   }
 
   static handleImage(context, type) async {
-    print("handleimage@@@@@@@@@@@@@@656+5 $type");
     Navigator.pop(context);
     ImageSource imageSource;
     if (type == 'camera') {

@@ -34,8 +34,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   queryUserPosts() async {
     currentUid = FirebaseAuth.instance.currentUser!.uid;
-    print(currentUid);
-    print(widget.uid);
     List<Post> posts = await PostService.queryUserPosts(widget.uid);
     if (!mounted) return;
     setState(() {
@@ -148,7 +146,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   goToEditProfile(userModel) async {
-    print('goToEditProfile@@@@@@@@@#####: ${userModel.name}');
     await Navigator.push(
         context,
         MaterialPageRoute(
@@ -161,7 +158,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   goToNewsApiPage() {
-    print('goToNewsApiPage');
     Navigator.push(
         context, MaterialPageRoute(builder: (context) => NewsScreen()));
   }

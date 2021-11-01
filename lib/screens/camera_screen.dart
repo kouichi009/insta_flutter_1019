@@ -40,7 +40,6 @@ class _CameraScreenState extends State<CameraScreen> {
           isUploading ? linearProgress() : Text(""),
           GestureDetector(
             onTap: () {
-              print("Container clicked");
               selectImage();
             },
             child: Container(
@@ -136,7 +135,6 @@ class _CameraScreenState extends State<CameraScreen> {
   }
 
   handleImage(type) async {
-    print("handleimage888 $type");
     Navigator.pop(context);
     ImageSource imageSource;
     if (type == 'camera') {
@@ -168,13 +166,11 @@ class _CameraScreenState extends State<CameraScreen> {
       isUploading = true;
     });
     final downloadUrl = await uploadImage(this.file);
-    print(widget.currentUid);
     await PostService.uploadPost(
         postId, widget.currentUid, downloadUrl, captionController.text);
     setState(() {
       isUploading = false;
     });
-    print('upload2@@@@@');
 
     Navigator.pushAndRemoveUntil(
       context,

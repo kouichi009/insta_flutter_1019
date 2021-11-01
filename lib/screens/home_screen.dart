@@ -64,7 +64,6 @@ class _HomeScreenState extends State<HomeScreen> {
     if (Platform.isIOS) getiOSPermission();
 
     _firebaseMessaging.getToken().then((token) {
-      // print("Firebase Messaging Token: $token\n");
       usersRef
           .doc(widget.currentUid)
           .update({"androidNotificationToken": token});
@@ -72,25 +71,21 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // workaround for onLaunch: When the app is completely closed (not in the background) and opened directly from the push notification
     // _firebaseMessaging.getInitialMessage().then((RemoteMessage? message) {
-    //   print('getInitialMessage data: ${message?.data}');
     //   // _serialiseAndNavigate(message);
     // });
 
     // // replacement for onResume: When the app is in the background and opened directly from the push notification.
     // FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage? message) {
-    //   print('onMessageOpenedApp data: ${message?.data}');
     //   // _serialiseAndNavigate(message);
     // });
 
     // onMessage: When the app is open and it receives a push notification
     FirebaseMessaging.onMessage.listen((RemoteMessage? message) {
-      print("onMessage data: ${message?.data}");
       if (message == null) return;
       final String recipientId = message.data['recipient'];
       final String? body = message.notification?.body;
 
       if (recipientId == widget.currentUid) {
-        // print("Notification shown!");
         SnackBar snackbar = SnackBar(
             content: Text(
           body!,
@@ -105,7 +100,6 @@ class _HomeScreenState extends State<HomeScreen> {
         //     onPressed: () {},
         //   ),
         // ));
-        print("snackBar: $body");
         _scaffoldKey.currentState?.showSnackBar(snackbar);
       }
     });
@@ -115,11 +109,9 @@ class _HomeScreenState extends State<HomeScreen> {
     //   // onLaunch: (Map<String, dynamic> message) async {},
     //   // onResume: (Map<String, dynamic> message) async {},
     //   onMessage: (Map<String, dynamic> message) async {
-    //     // print("on message: $message\n");
     //     final String recipientId = message['data']['recipient'];
     //     final String body = message['notification']['body'];
     //     if (recipientId == user.id) {
-    //       // print("Notification shown!");
     //       SnackBar snackbar = SnackBar(
     //           content: Text(
     //         body,
@@ -127,7 +119,6 @@ class _HomeScreenState extends State<HomeScreen> {
     //       ));
     //       _scaffoldKey.currentState.showSnackBar(snackbar);
     //     }
-    //     // print("Notification NOT shown");
     //   },
     // );
   }

@@ -148,7 +148,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   handleImage(type) async {
-    print("handleimage888 $type");
     Navigator.pop(context);
     ImageSource imageSource;
     if (type == 'camera') {
@@ -169,7 +168,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   // upload() async {
   //   final downloadUrl = await uploadImage(this.file);
-  //   print(widget.currentUid);
 
   //   postsRef.doc(postId).set({
   //     "id": postId,
@@ -240,7 +238,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
                 GestureDetector(
                   onTap: () async {
-                    print("Container clicked");
                     var datePicked = await DatePicker.showSimpleDatePicker(
                       context,
                       initialDate: DateTime(1994),

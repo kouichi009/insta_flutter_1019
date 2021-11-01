@@ -123,7 +123,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                 MaterialPageRoute(
                                   builder: (context) => SignUpScreen(),
                                 )),
-                            // print('push login button@@@@@'),
                             color: Colors.blue,
                             padding: const EdgeInsets.all(10.0),
                             child: Text(

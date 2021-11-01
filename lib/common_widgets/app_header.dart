@@ -19,7 +19,6 @@ class AppHeader extends StatelessWidget with PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('removeBackButton@@ $isAppTitle $removeBackButton');
     return AppBar(
       automaticallyImplyLeading: removeBackButton ? false : true,
       title: Text(
