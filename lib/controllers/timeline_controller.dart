@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:instagram_flutter02/models/controller_datas/timelineData.dart';
+import 'package:instagram_flutter02/models/controller_datas/timeline_data.dart';
 import 'package:instagram_flutter02/models/post.dart';
 import 'package:instagram_flutter02/services/api/post_service.dart';
 

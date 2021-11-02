@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:instagram_flutter02/common_widgets/app_header.dart';
 import 'package:instagram_flutter02/common_widgets/post_view.dart';
 import 'package:instagram_flutter02/controllers/timeline_controller.dart';
-import 'package:instagram_flutter02/models/controller_datas/timelineData.dart';
+import 'package:instagram_flutter02/models/controller_datas/timeline_data.dart';
 import 'package:instagram_flutter02/models/post.dart';
 import 'package:instagram_flutter02/models/user_model.dart';
 import 'package:instagram_flutter02/screens/post_detail_screen.dart';

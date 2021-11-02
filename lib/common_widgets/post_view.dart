@@ -3,7 +3,10 @@ import 'package:animator/animator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:instagram_flutter02/common_widgets/custom_cached_image.dart';
+import 'package:instagram_flutter02/controllers/post_view_controller.dart';
+import 'package:instagram_flutter02/models/controller_datas/post_view_data.dart';
 import 'package:instagram_flutter02/models/post.dart';
 import 'package:instagram_flutter02/models/user_model.dart';
 import 'package:instagram_flutter02/screens/profile_screen.dart';
@@ -13,90 +16,87 @@ import 'package:instagram_flutter02/utilities/themes.dart';
 import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 
-class PostView extends StatefulWidget {
+final postViewControllerProvider =
+    StateNotifierProvider<PostViewController, PostViewData>((ref) {
+  return PostViewController();
+});
+
+class PostView extends ConsumerWidget {
   String? currentUid;
   Post? post;
   UserModel? userModel;
 
   PostView({this.currentUid, this.post, this.userModel});
 
-  @override
-  _PostViewState createState() => _PostViewState();
-}
+  // String loremIpsum =
+  //     'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of clickType and scrambled it to make a clickType specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.';
 
-class _PostViewState extends State<PostView> {
-  bool _isLiked = false;
-  int _likeCount = 0;
-  Map likes = {};
-  bool showHeart = false;
-  bool isPushingLike = false;
-  bool isReadMore = false;
-  String loremIpsum =
-      'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.';
+  late PostViewController _postViewController;
+  late PostViewData _postViewData;
 
-  @override
-  void initState() {
-    super.initState();
-    _likeCount = widget.post!.likeCount;
-    _isLiked = widget.post?.likes[widget.currentUid] == true;
-  }
-
-  handleLikePost(type) async {
+  handleLikePost(clickType) async {
+    _postViewController.handleLikePost(
+        clickType: clickType, currentUid: currentUid, post: post);
     // bool _isLiked = widget.post?.likes[widget.currentUid] == true;
-    if (isPushingLike == false) {
-      isPushingLike = true;
-      if (_isLiked && type == 'single') {
-        await PostService.unLikePost(widget.currentUid, widget.post);
-        setState(() {
-          _likeCount -= 1;
-          _isLiked = false;
-          // likes[widget.currentUid] = false;
-        });
-      } else if (!_isLiked) {
-        await PostService.likePost(widget.currentUid, widget.post);
-        setState(() {
-          _likeCount += 1;
-          _isLiked = true;
-          if (type == "double") {
-            showHeart = true;
-          }
-        });
-        if (type == "double") {
-          Timer(Duration(milliseconds: 500), () {
-            setState(() {
-              showHeart = false;
-            });
-          });
-        }
-
-      }
-      isPushingLike = false;
-    }
+    // if (isPushingLike == false) {
+    //   isPushingLike = true;
+    //   if (_isLiked && clickType == 'single') {
+    //     await PostService.unLikePost(widget.currentUid, widget.post);
+    //     setState(() {
+    //       _likeCount -= 1;
+    //       _isLiked = false;
+    //       // likes[widget.currentUid] = false;
+    //     });
+    //   } else if (!_isLiked) {
+    //     await PostService.likePost(widget.currentUid, widget.post);
+    //     setState(() {
+    //       _likeCount += 1;
+    //       _isLiked = true;
+    //       if (clickType == "double") {
+    //         showHeart = true;
+    //       }
+    //     });
+    //     if (clickType == "double") {
+    //       Timer(Duration(milliseconds: 500), () {
+    //         setState(() {
+    //           showHeart = false;
+    //         });
+    //       });
+    //     }
+    //   }
+    //   isPushingLike = false;
+    // }
   }
 
   readMoreLess() {
-    setState(() {
-      isReadMore = !isReadMore;
-    });
+    _postViewController.readMoreLess();
+    // setState(() {
+    //   isReadMore = !isReadMore;
+    // });
   }
 
-  goToProfilePage() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => ProfileScreen(uid: widget.post?.uid)),
-    );
+  goToProfilePage(context, post) {
+    _postViewController.goToProfilePage(context: context, uid: post.uid);
+
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //       builder: (context) => ProfileScreen(uid: widget.post?.uid)),
+    // );
   }
 
   Widget buildText() {
-    final maxLines = isReadMore ? null : 2;
-    final overflow = isReadMore ? TextOverflow.visible : TextOverflow.ellipsis;
-
+    final maxLines = _postViewData.isReadMore! ? null : 2;
+    final overflow = _postViewData.isReadMore!
+        ? TextOverflow.visible
+        : TextOverflow.ellipsis;
+    final iconType =
+        _postViewData.isReadMore! ? Icons.expand_less : Icons.expand_more;
     return Row(
       children: <Widget>[
         Expanded(
             child: Text(
-          widget.post!.caption,
+          post!.caption,
           maxLines: maxLines,
           overflow: overflow,
           style: TextStyle(fontSize: 16),
@@ -104,7 +104,7 @@ class _PostViewState extends State<PostView> {
         GestureDetector(
           onTap: () => readMoreLess(),
           child: Icon(
-            isReadMore ? Icons.expand_less : Icons.expand_more,
+            iconType,
             size: 35.0,
           ),
         ),
@@ -114,7 +114,10 @@ class _PostViewState extends State<PostView> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    _postViewController = ref.watch(postViewControllerProvider.notifier);
+    _postViewData = ref.watch(postViewControllerProvider);
+
     return Padding(
       padding: EdgeInsets.only(bottom: 50.0),
       child: Column(
@@ -131,8 +134,8 @@ class _PostViewState extends State<PostView> {
               alignment: Alignment.center,
               children: <Widget>[
                 // height: MediaQuery.of(context).size.width,
-                customCachedImage(widget.post!.photoUrl),
-                showHeart
+                customCachedImage(post!.photoUrl),
+                _postViewData.showHeart!
                     ? Animator(
                         duration: Duration(milliseconds: 300),
                         tween: Tween(begin: 0.8, end: 1.4),
@@ -154,20 +157,20 @@ class _PostViewState extends State<PostView> {
           Container(
             child: ListTile(
               leading: GestureDetector(
-                onTap: () => goToProfilePage(),
+                onTap: () => goToProfilePage(context, post),
                 child: CircleAvatar(
                   backgroundColor: Colors.grey,
                   backgroundImage: CachedNetworkImageProvider(
-                    widget.userModel!.profileImageUrl,
+                    userModel!.profileImageUrl,
                   ),
                 ),
               ),
               title: GestureDetector(
-                onTap: () => goToProfilePage(),
+                onTap: () => goToProfilePage(context, post),
                 child: Row(
                   children: [
                     Text(
-                      widget.userModel!.name,
+                      userModel!.name,
                       style: kFontSize18FontWeight600TextStyle,
                     ),
                   ],
@@ -175,7 +178,7 @@ class _PostViewState extends State<PostView> {
               ),
               trailing: Text(
                 DateFormat("yyyy/MM/dd")
-                    .format(widget.post!.timestamp.toDate())
+                    .format(post!.timestamp.toDate())
                     .toString(),
                 style: TextStyle(fontSize: 16.0, color: Colors.black),
               ),
@@ -205,7 +208,7 @@ class _PostViewState extends State<PostView> {
                             GestureDetector(
                               onTap: () => handleLikePost('single'),
                               child: Icon(
-                                _isLiked
+                                _postViewData.isLiked!
                                     ? Icons.favorite
                                     : Icons.favorite_border,
                                 size: 35.0,
@@ -213,7 +216,7 @@ class _PostViewState extends State<PostView> {
                               ),
                             ),
                             Container(
-                              child: Text(_likeCount.toString()),
+                              child: Text(_postViewData.likeCount.toString()),
                             ),
                           ],
                         ),
