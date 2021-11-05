@@ -64,13 +64,15 @@ class TimelineScreen extends ConsumerWidget {
         child: ListView.builder(
           itemCount: _posts.length,
           itemBuilder: (BuildContext _context, int _index) {
+            Post _post = _posts[_index];
+            _post.isLiked = _post.likes![currentUid] == true;
             return new GestureDetector(
               //You need to make my child interactive
               onTap: () => goToPostDetail(_context, _posts[_index]),
               child: PostView(
                 currentUid: currentUid,
                 userModel: _userModels[_index],
-                post: _posts[_index],
+                post: _post,
               ),
             );
           },

@@ -40,12 +40,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       isLoading = true;
     });
     final userModel = await getUserFromDB();
-    nameController.text = userModel.name;
+    nameController.text = userModel.name!;
     profileImageUrl = userModel.profileImageUrl;
     dateOfBirth = {
-      'year': userModel.dateOfBirth['year'],
-      "month": userModel.dateOfBirth['month'],
-      'day': userModel.dateOfBirth['day']
+      'year': userModel.dateOfBirth!['year'],
+      "month": userModel.dateOfBirth!['month'],
+      'day': userModel.dateOfBirth!['day']
     };
     if (userModel.gender == FEMALE) {
       _radioSelected = 2;

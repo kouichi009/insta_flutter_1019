@@ -1,24 +1,24 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserModel {
-  final String uid;
-  final String name;
-  final String profileImageUrl;
-  final dynamic dateOfBirth;
-  final String gender;
-  final Timestamp timestamp;
-  final String androidNotificationToken;
-  final int status;
+  final String? uid;
+  final String? name;
+  final String? profileImageUrl;
+  final Map? dateOfBirth;
+  final String? gender;
+  final Timestamp? timestamp;
+  final String? androidNotificationToken;
+  final int? status;
 
   UserModel({
-    required this.uid,
-    required this.name,
-    required this.profileImageUrl,
-    required this.dateOfBirth,
-    required this.gender,
-    required this.timestamp,
-    required this.androidNotificationToken,
-    required this.status,
+    this.uid,
+    this.name,
+    this.profileImageUrl,
+    this.dateOfBirth,
+    this.gender,
+    this.timestamp,
+    this.androidNotificationToken,
+    this.status,
   });
 
   factory UserModel.fromDoc(DocumentSnapshot doc) {

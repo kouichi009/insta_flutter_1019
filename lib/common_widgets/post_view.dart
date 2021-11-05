@@ -17,7 +17,7 @@ import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 
 final postViewControllerProvider =
-    StateNotifierProvider<PostViewController, PostViewData>((ref) {
+    StateNotifierProvider<PostViewController, Post>((ref) {
   return PostViewController();
 });
 
@@ -32,11 +32,11 @@ class PostView extends ConsumerWidget {
   //     'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of clickType and scrambled it to make a clickType specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.';
 
   late PostViewController _postViewController;
-  late PostViewData _postViewData;
 
   handleLikePost(clickType) async {
-    _postViewController.handleLikePost(
-        clickType: clickType, currentUid: currentUid, post: post);
+    print('handlerLike');
+    // _postViewController.handleLikePost(
+    //     clickType: clickType, currentUid: currentUid, post: post);
     // bool _isLiked = widget.post?.likes[widget.currentUid] == true;
     // if (isPushingLike == false) {
     //   isPushingLike = true;
@@ -76,7 +76,7 @@ class PostView extends ConsumerWidget {
   }
 
   goToProfilePage(context, post) {
-    _postViewController.goToProfilePage(context: context, uid: post.uid);
+    // _postViewController.goToProfilePage(context: context, uid: post.uid);
 
     // Navigator.push(
     //   context,
@@ -86,17 +86,15 @@ class PostView extends ConsumerWidget {
   }
 
   Widget buildText() {
-    final maxLines = _postViewData.isReadMore! ? null : 2;
-    final overflow = _postViewData.isReadMore!
-        ? TextOverflow.visible
-        : TextOverflow.ellipsis;
-    final iconType =
-        _postViewData.isReadMore! ? Icons.expand_less : Icons.expand_more;
+    final maxLines = post!.isReadMore! ? null : 2;
+    final overflow =
+        post!.isReadMore! ? TextOverflow.visible : TextOverflow.ellipsis;
+    final iconType = post!.isReadMore! ? Icons.expand_less : Icons.expand_more;
     return Row(
       children: <Widget>[
         Expanded(
             child: Text(
-          post!.caption,
+          post!.caption!,
           maxLines: maxLines,
           overflow: overflow,
           style: TextStyle(fontSize: 16),
@@ -110,14 +108,22 @@ class PostView extends ConsumerWidget {
         ),
       ],
     );
-    // );
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     _postViewController = ref.watch(postViewControllerProvider.notifier);
-    _postViewData = ref.watch(postViewControllerProvider);
+    Post postWithProvider = ref.watch(postViewControllerProvider);
+    postWithProvider = post!.copyPostWith(post: post);
+    // post = postData.copyWith(post);
 
+    print('Rebuild PostView! ${postWithProvider.id}');
+    return ElevatedButton(
+      child: Text("Show picker widget"),
+      onPressed: () {
+        readMoreLess();
+      },
+    );
     return Padding(
       padding: EdgeInsets.only(bottom: 50.0),
       child: Column(
@@ -134,8 +140,8 @@ class PostView extends ConsumerWidget {
               alignment: Alignment.center,
               children: <Widget>[
                 // height: MediaQuery.of(context).size.width,
-                customCachedImage(post!.photoUrl),
-                _postViewData.showHeart!
+                customCachedImage(post!.photoUrl!),
+                post!.isShowHeart!
                     ? Animator(
                         duration: Duration(milliseconds: 300),
                         tween: Tween(begin: 0.8, end: 1.4),
@@ -161,7 +167,7 @@ class PostView extends ConsumerWidget {
                 child: CircleAvatar(
                   backgroundColor: Colors.grey,
                   backgroundImage: CachedNetworkImageProvider(
-                    userModel!.profileImageUrl,
+                    userModel!.profileImageUrl!,
                   ),
                 ),
               ),
@@ -170,18 +176,18 @@ class PostView extends ConsumerWidget {
                 child: Row(
                   children: [
                     Text(
-                      userModel!.name,
+                      userModel!.name!,
                       style: kFontSize18FontWeight600TextStyle,
                     ),
                   ],
                 ),
               ),
-              trailing: Text(
-                DateFormat("yyyy/MM/dd")
-                    .format(post!.timestamp.toDate())
-                    .toString(),
-                style: TextStyle(fontSize: 16.0, color: Colors.black),
-              ),
+              trailing: Text('anv'
+                  // DateFormat("yyyy/MM/dd")
+                  //     .format(post!.timestamp!.toDate())
+                  //     .toString(),
+                  // style: TextStyle(fontSize: 16.0, color: Colors.black),
+                  ),
             ),
           ),
 
@@ -208,7 +214,7 @@ class PostView extends ConsumerWidget {
                             GestureDetector(
                               onTap: () => handleLikePost('single'),
                               child: Icon(
-                                _postViewData.isLiked!
+                                post!.isLiked!
                                     ? Icons.favorite
                                     : Icons.favorite_border,
                                 size: 35.0,
@@ -216,7 +222,7 @@ class PostView extends ConsumerWidget {
                               ),
                             ),
                             Container(
-                              child: Text(_postViewData.likeCount.toString()),
+                              child: Text(post!.likeCount.toString()),
                             ),
                           ],
                         ),
