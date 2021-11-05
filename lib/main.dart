@@ -5,15 +5,13 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:instagram_flutter02/screens/home_screen.dart';
 import 'package:instagram_flutter02/screens/launch_screen.dart';
 import 'package:instagram_flutter02/screens/login_screen.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Future.wait([
-    Firebase.initializeApp(),
-    dotenv.load(fileName: "assets/.env"),
-  ]);
-  runApp(ProviderScope(child: MyApp()));
+  await Firebase.initializeApp();
+  await dotenv.load(fileName: "assets/.env");
+  // FirebaseAuth.instance.signOut();
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
