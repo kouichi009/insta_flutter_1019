@@ -12,9 +12,11 @@ class PostService {
   // static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   // static final FirebaseMessaging _messaging = FirebaseMessaging();
 
-  static Future<dynamic /*List<Post>, String*/ > queryTimeline(
+  dynamic? lastDocument = null;
+
+  static Future<Map<String, dynamic>> queryTimeline(
       documentLimit, lastDocument, hasMore) async {
-    print('$documentLimit, $lastDocument, $hasMore');
+    print('PostService.queryTimeline $documentLimit, $lastDocument, $hasMore');
     FirebaseFirestore _firestore = FirebaseFirestore.instance;
     List<Post> posts = [];
     List<UserModel> userModels = [];

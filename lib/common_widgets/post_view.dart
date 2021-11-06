@@ -1,101 +1,50 @@
-import 'dart:async';
-import 'package:animator/animator.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:instagram_flutter02/common_widgets/custom_cached_image.dart';
 import 'package:instagram_flutter02/models/post.dart';
 import 'package:instagram_flutter02/models/user_model.dart';
-import 'package:instagram_flutter02/screens/profile_screen.dart';
-import 'package:instagram_flutter02/services/api/post_service.dart';
-import 'package:instagram_flutter02/utilities/constants.dart';
+import 'package:instagram_flutter02/providers/post_view_provider.dart';
 import 'package:instagram_flutter02/utilities/themes.dart';
 import 'package:intl/intl.dart';
-import 'package:ionicons/ionicons.dart';
+import 'package:provider/provider.dart';
 
-class PostView extends StatefulWidget {
-  String? currentUid;
-  Post? post;
-  UserModel? userModel;
+class PostView extends StatelessWidget {
+  // const PostView({Key? key}) : super(key: key);
 
-  PostView({this.currentUid, this.post, this.userModel});
+  final UserModel? userModel;
+  final Post? post;
 
-  @override
-  _PostViewState createState() => _PostViewState();
-}
+  PostView({this.userModel, this.post});
 
-class _PostViewState extends State<PostView> {
-  bool _isLiked = false;
-  int _likeCount = 0;
-  Map likes = {};
-  bool showHeart = false;
-  bool isPushingLike = false;
-  bool isReadMore = false;
-  String loremIpsum =
-      'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.';
-
-  @override
-  void initState() {
-    super.initState();
-    _likeCount = widget.post!.likeCount;
-    _isLiked = widget.post?.likes[widget.currentUid] == true;
+  handleLikePost({type, post, postViewProvider, currentUid}) async {
+    print(currentUid);
+    // final authUser = context.read<User?>();
+    postViewProvider.handleLikePost(
+        type: type, currentUid: currentUid, post: post);
   }
 
-  handleLikePost(type) async {
-    // bool _isLiked = widget.post?.likes[widget.currentUid] == true;
-    if (isPushingLike == false) {
-      isPushingLike = true;
-      if (_isLiked && type == 'single') {
-        await PostService.unLikePost(widget.currentUid, widget.post);
-        setState(() {
-          _likeCount -= 1;
-          _isLiked = false;
-          // likes[widget.currentUid] = false;
-        });
-      } else if (!_isLiked) {
-        await PostService.likePost(widget.currentUid, widget.post);
-        setState(() {
-          _likeCount += 1;
-          _isLiked = true;
-          if (type == "double") {
-            showHeart = true;
-          }
-        });
-        if (type == "double") {
-          Timer(Duration(milliseconds: 500), () {
-            setState(() {
-              showHeart = false;
-            });
-          });
-        }
-      }
-      isPushingLike = false;
-    }
-  }
-
-  readMoreLess() {
-    setState(() {
-      isReadMore = !isReadMore;
-    });
-  }
+  readMoreLess() {}
 
   goToProfilePage() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => ProfileScreen(uid: widget.post?.uid)),
-    );
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //       builder: (context) => ProfileScreen(uid: widget.post?.uid)),
+    // );
   }
 
-  Widget buildText() {
-    final maxLines = isReadMore ? null : 2;
-    final overflow = isReadMore ? TextOverflow.visible : TextOverflow.ellipsis;
+  Widget buildText(PostViewProvider postViewProvider) {
+    final maxLines = postViewProvider.isReadMore ? null : 2;
+    final overflow = postViewProvider.isReadMore
+        ? TextOverflow.visible
+        : TextOverflow.ellipsis;
 
     return Row(
       children: <Widget>[
         Expanded(
             child: Text(
-          widget.post!.caption,
+          post!.caption,
           maxLines: maxLines,
           overflow: overflow,
           style: TextStyle(fontSize: 16),
@@ -103,7 +52,7 @@ class _PostViewState extends State<PostView> {
         GestureDetector(
           onTap: () => readMoreLess(),
           child: Icon(
-            isReadMore ? Icons.expand_less : Icons.expand_more,
+            postViewProvider.isReadMore ? Icons.expand_less : Icons.expand_more,
             size: 35.0,
           ),
         ),
@@ -114,6 +63,9 @@ class _PostViewState extends State<PostView> {
 
   @override
   Widget build(BuildContext context) {
+    print(context);
+    PostViewProvider postViewProvider = context.watch<PostViewProvider>();
+    final authUser = context.watch<User?>();
     return Padding(
       padding: EdgeInsets.only(bottom: 50.0),
       child: Column(
@@ -125,28 +77,32 @@ class _PostViewState extends State<PostView> {
           //   bottom: 100.0,
           // )),
           GestureDetector(
-            onDoubleTap: () => handleLikePost('double'),
+            onDoubleTap: () => handleLikePost(
+                type: 'double',
+                post: post,
+                postViewProvider: postViewProvider,
+                currentUid: authUser?.uid),
             child: Stack(
               alignment: Alignment.center,
               children: <Widget>[
                 // height: MediaQuery.of(context).size.width,
-                customCachedImage(widget.post!.photoUrl),
-                showHeart
-                    ? Animator(
-                        duration: Duration(milliseconds: 300),
-                        tween: Tween(begin: 0.8, end: 1.4),
-                        curve: Curves.elasticOut,
-                        cycles: 0,
-                        builder: (context, anim, child) => Transform.scale(
-                          scale: anim.controller.value,
-                          child: Icon(
-                            Icons.favorite,
-                            size: 80.0,
-                            color: Colors.red,
-                          ),
-                        ),
-                      )
-                    : Text(""),
+                customCachedImage(post!.photoUrl),
+                // showHeart
+                //     ? Animator(
+                //         duration: Duration(milliseconds: 300),
+                //         tween: Tween(begin: 0.8, end: 1.4),
+                //         curve: Curves.elasticOut,
+                //         cycles: 0,
+                //         builder: (context, anim, child) => Transform.scale(
+                //           scale: anim.controller.value,
+                //           child: Icon(
+                //             Icons.favorite,
+                //             size: 80.0,
+                //             color: Colors.red,
+                //           ),
+                //         ),
+                //       )
+                //     : Text(""),
               ],
             ),
           ),
@@ -157,7 +113,7 @@ class _PostViewState extends State<PostView> {
                 child: CircleAvatar(
                   backgroundColor: Colors.grey,
                   backgroundImage: CachedNetworkImageProvider(
-                    widget.userModel!.profileImageUrl,
+                    userModel!.profileImageUrl,
                   ),
                 ),
               ),
@@ -166,7 +122,7 @@ class _PostViewState extends State<PostView> {
                 child: Row(
                   children: [
                     Text(
-                      widget.userModel!.name,
+                      userModel!.name,
                       style: kFontSize18FontWeight600TextStyle,
                     ),
                   ],
@@ -174,7 +130,7 @@ class _PostViewState extends State<PostView> {
               ),
               trailing: Text(
                 DateFormat("yyyy/MM/dd")
-                    .format(widget.post!.timestamp.toDate())
+                    .format(post!.timestamp.toDate())
                     .toString(),
                 style: TextStyle(fontSize: 16.0, color: Colors.black),
               ),
@@ -197,14 +153,18 @@ class _PostViewState extends State<PostView> {
                       children: <Widget>[
                         Container(
                           padding: EdgeInsets.all(5.0),
-                          child: buildText(),
+                          child: buildText(postViewProvider),
                         ),
                         Row(
                           children: <Widget>[
                             GestureDetector(
-                              onTap: () => handleLikePost('single'),
+                              onTap: () => handleLikePost(
+                                  type: 'single',
+                                  post: post,
+                                  postViewProvider: postViewProvider,
+                                  currentUid: authUser?.uid),
                               child: Icon(
-                                _isLiked
+                                postViewProvider.isLiked
                                     ? Icons.favorite
                                     : Icons.favorite_border,
                                 size: 35.0,
@@ -212,7 +172,8 @@ class _PostViewState extends State<PostView> {
                               ),
                             ),
                             Container(
-                              child: Text(_likeCount.toString()),
+                              child:
+                                  Text(postViewProvider.likeCount.toString()),
                             ),
                           ],
                         ),

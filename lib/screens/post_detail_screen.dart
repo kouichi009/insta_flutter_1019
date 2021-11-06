@@ -93,11 +93,11 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
         body: !_isLoading
             ? ListView(
                 children: <Widget>[
-                  PostView(
-                    currentUid: widget.currentUid,
-                    userModel: _latestUserModel,
-                    post: _latestPost,
-                  ),
+                  // PostView(
+                  //   currentUid: widget.currentUid,
+                  //   userModel: _latestUserModel,
+                  //   post: _latestPost,
+                  // ),
                 ],
               )
             : Center(
