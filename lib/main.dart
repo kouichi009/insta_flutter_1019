@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:instagram_flutter02/providers/like_notifier.dart';
 import 'package:instagram_flutter02/models/user_model.dart';
 import 'package:instagram_flutter02/providers/bottom_navigation_bar_provider.dart';
 import 'package:instagram_flutter02/providers/post_view_provider.dart';
@@ -35,8 +36,10 @@ class MyApp extends StatelessWidget {
               create: (context) => BottomNavigationBarProvider()),
           ChangeNotifierProvider<TimelineProvider>(
               create: (context) => TimelineProvider()..init()),
-          ChangeNotifierProvider<PostViewProvider>(
-              create: (context) => PostViewProvider()),
+          // ChangeNotifierProvider<LikeNotifier>(
+          //     create: (context) => LikeNotifier()),
+          // ChangeNotifierProvider<PostViewProvider>(
+          //     create: (context) => PostViewProvider()),
           // StreamProvider<List<BlogPost>>(
           //   initialData: [],
           //   create: (context) => blogPosts(),

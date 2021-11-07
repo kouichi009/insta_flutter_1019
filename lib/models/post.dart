@@ -1,24 +1,25 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Post {
-  final String id;
-  final String caption;
-  final String photoUrl;
-  final String uid;
-  final dynamic likes;
-  final int likeCount;
-  final Timestamp timestamp;
-  final int status;
+  final String? id;
+  final String? caption;
+  final String? photoUrl;
+  final String? uid;
+  final Map<String, dynamic>? likes;
+  final int? likeCount;
+  final Timestamp? timestamp;
+  final int? status;
+  bool? isLiked;
 
   Post({
-    required this.id,
-    required this.caption,
-    required this.photoUrl,
-    required this.uid,
-    required this.likes,
-    required this.likeCount,
-    required this.timestamp,
-    required this.status,
+    this.id,
+    this.caption,
+    this.photoUrl,
+    this.uid,
+    this.likes,
+    this.likeCount,
+    this.timestamp,
+    this.status,
   });
 
   factory Post.fromDoc(DocumentSnapshot doc) {

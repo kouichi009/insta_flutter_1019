@@ -40,7 +40,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       isLoading = true;
     });
     final userModel = await getUserFromDB();
-    nameController.text = userModel.name;
+    nameController.text = userModel.name!;
     profileImageUrl = userModel.profileImageUrl;
     dateOfBirth = {
       'year': userModel.dateOfBirth!['year'],

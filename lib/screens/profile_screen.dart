@@ -69,8 +69,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     CircleAvatar(
                       radius: 50.0,
                       backgroundColor: Colors.grey,
-                      backgroundImage:
-                          CachedNetworkImageProvider(userModel.profileImageUrl),
+                      backgroundImage: CachedNetworkImageProvider(
+                          userModel.profileImageUrl!),
                     ),
                     Expanded(
                       flex: 1,
@@ -80,7 +80,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             mainAxisSize: MainAxisSize.max,
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: <Widget>[
-                              Text(userModel.name),
+                              Text(userModel.name!),
                               Text(
                                   '${userModel.dateOfBirth!['year']}年${userModel.dateOfBirth!['month']}月${userModel.dateOfBirth!['day']}日'),
                               // buildCountColumn("posts", postCount),
