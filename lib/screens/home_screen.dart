@@ -27,6 +27,7 @@ class HomeScreen extends StatelessWidget {
     TimelineScreen(),
     CameraScreen(),
     ProfileScreen(),
+    SignUpScreen(),
   ];
 
   @override
@@ -54,6 +55,7 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
           BottomNavigationBarItem(icon: Icon(Icons.account_circle)),
+          BottomNavigationBarItem(icon: Icon(Icons.email)),
         ],
       ),
     );

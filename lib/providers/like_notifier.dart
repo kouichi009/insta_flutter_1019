@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:instagram_flutter02/models/post.dart';
 
 class LikeNotifier extends ChangeNotifier {
-  // final Post post;
-  // LikeNotifier(this.post);
+  final Post post;
+  LikeNotifier(this.post);
 
   bool _isLiked = false;
 

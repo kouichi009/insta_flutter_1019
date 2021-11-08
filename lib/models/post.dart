@@ -5,11 +5,12 @@ class Post {
   final String? caption;
   final String? photoUrl;
   final String? uid;
-  final Map<String, dynamic>? likes;
-  final int? likeCount;
   final Timestamp? timestamp;
   final int? status;
+  Map<String, dynamic>? likes;
+  int? likeCount;
   bool? isLiked;
+  bool? isReadMore;
 
   Post({
     this.id,

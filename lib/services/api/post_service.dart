@@ -16,7 +16,6 @@ class PostService {
 
   static Future<Map<String, dynamic>> queryTimeline(
       documentLimit, lastDocument, hasMore) async {
-    print('PostService.queryTimeline $documentLimit, $lastDocument, $hasMore');
     FirebaseFirestore _firestore = FirebaseFirestore.instance;
     List<Post> posts = [];
     List<UserModel> userModels = [];

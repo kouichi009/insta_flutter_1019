@@ -8,7 +8,7 @@ class TimelineProvider with ChangeNotifier {
 
   // dynamic get lastDocument => _lastDocument;
 
-  int _documentLimit = 5;
+  int _documentLimit = 2;
   bool _hasMore = true;
   List<Post> _posts = [];
   List<UserModel> _userModels = [];
@@ -33,9 +33,9 @@ class TimelineProvider with ChangeNotifier {
 
   void getQueryTimeline() async {
     // _lastDocument = lastDocument;
-    print('getQueryTimeline()@@@@@@@@@@@@@@@@@@');
-    Map<String, dynamic> values = await PostService.queryTimeline(
+    final values = await PostService.queryTimeline(
         _documentLimit, _lastDocument, _hasMore);
+    print(values);
     _lastDocument = values['lastDocument'];
     _posts = [..._posts, ...values['posts']];
     _userModels = [..._userModels, ...values['userModels']];
@@ -43,24 +43,31 @@ class TimelineProvider with ChangeNotifier {
     // 'userModels': userModels,
     // 'hasMore': hasMore,
     // 'lastDocument': lastDocument,
+    print('getQueryTimeline()@@@@@@@@@@@@@@@@@@: ${_posts.length}');
+    for (var i = 0; i < _posts.length; i++) {
+      bool? isLiked = _posts[i].isLiked;
+      Map? likes = _posts[i].likes;
+      String? id = _posts[i].id;
+      bool? isReadMore = _posts[i].isReadMore;
+      print('${i}番目: $isLiked, $likes, $id, $isReadMore');
+      // if (post.id == widget.posts![i].id) {
+      //   widget.posts!.removeAt(i);
+      // }
+    }
     notifyListeners();
   }
 
-  // List<StoreItem> get items => _items;
-
-  // void remove(StoreItem item) {
-  //   _items.remove(item);
-  //   notifyListeners();
-  // }
-
-  // void add(StoreItem item) {
-  //   _items.add(item);
-  //   notifyListeners();
-  // }
-
-  // num get totalPrice {
-  //   return _items.fold(0, (previousValue, storeItem) {
-  //     return previousValue + storeItem.price;
-  //   });
-  // }
+  updatePost(
+      {int? index,
+      bool? isReadMore,
+      Map<String, dynamic>? likes,
+      int? likeCount}) {
+    print(posts.length);
+    print(posts[index!]);
+    print(posts[index].isReadMore);
+    if (isReadMore != null) posts[index].isReadMore = isReadMore;
+    if (likes != null) posts[index].likes = likes;
+    if (likeCount != null) posts[index].likeCount = likeCount;
+    print(posts[index].isReadMore);
+  }
 }

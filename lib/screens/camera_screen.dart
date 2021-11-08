@@ -16,7 +16,7 @@ import 'home_screen.dart';
 class CameraScreen extends StatefulWidget {
   String? currentUid;
 
-  CameraScreen({this.currentUid});
+  CameraScreen({this.currentUid = 'iVx0nC5VTVg5Yf1FGTzXEQPrq113'});
 
   @override
   _CameraScreenState createState() => _CameraScreenState();

@@ -32,21 +32,21 @@ class _PostGridViewState extends State<PostGridView> {
   }
 
   goToDetailPost(post) async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) =>
-            PostDetailScreen(currentUid: widget.currentUid, post: post),
-      ),
-    );
-    if (result != null) {
-      for (var i = 0; i < widget.posts!.length; i++) {
-        if (post.id == widget.posts![i].id) {
-          widget.posts!.removeAt(i);
-        }
-      }
-      setState(() {});
-    }
+    // final result = await Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) =>
+    //         PostDetailScreen(currentUid: widget.currentUid, post: post),
+    //   ),
+    // );
+    // if (result != null) {
+    //   for (var i = 0; i < widget.posts!.length; i++) {
+    //     if (post.id == widget.posts![i].id) {
+    //       widget.posts!.removeAt(i);
+    //     }
+    //   }
+    //   setState(() {});
+    // }
   }
 
   PostTile(post) {

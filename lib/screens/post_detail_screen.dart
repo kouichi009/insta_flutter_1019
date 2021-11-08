@@ -1,45 +1,60 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_flutter02/common_widgets/app_header.dart';
 import 'package:instagram_flutter02/common_widgets/post_view.dart';
 import 'package:instagram_flutter02/models/post.dart';
 import 'package:instagram_flutter02/models/user_model.dart';
+import 'package:instagram_flutter02/providers/like_read_notifier_provider.dart';
 import 'package:instagram_flutter02/services/api/post_service.dart';
+import 'package:provider/src/provider.dart';
 
-class PostDetailScreen extends StatefulWidget {
-  String? currentUid;
-  Post? post;
-  UserModel? userModel;
+class PostDetailScreen extends StatelessWidget {
+  // const PostDetailScreen({Key? key}) : super(key: key);
+  final Post? post;
+  final UserModel? userModel;
+  final int? index;
 
-  PostDetailScreen({this.currentUid, this.post});
-
-  @override
-  _PostDetailScreenState createState() => _PostDetailScreenState();
-}
-
-class _PostDetailScreenState extends State<PostDetailScreen> {
-  Post? _latestPost;
-  UserModel? _latestUserModel;
-  bool _isLoading = true;
+  PostDetailScreen({this.post, this.userModel, this.index});
 
   @override
-  void initState() {
-    super.initState();
-    getLatestPost();
-  }
-
-  getLatestPost() async {
-    Map latestObj = await PostService.getLatestPost(widget.post);
-    _latestPost = latestObj['latestPost'];
-    _latestUserModel = latestObj['latestUserModel'];
-    setState(() {
-      _isLoading = false;
-    });
-  }
-
-  deletePost(context) async {
-    await PostService.deletePost(widget.post);
-    Navigator.pop(context);
-    Navigator.pop(context, _latestPost);
+  Widget build(BuildContext context) {
+    print(post?.id);
+    final authUser = context.watch<User?>();
+    final likeReadNotifierProvider = context.watch<LikeReadNotifierProvider>();
+    print(authUser);
+    print(likeReadNotifierProvider);
+    // final likeReadNotifierProvider =
+    //     Provider.of<LikeReadNotifierProvider>(context);
+    return Scaffold(
+        // appBar: AppBar(
+        //   title: const Text('テストアプリ'),
+        //   actions: <Widget>[
+        //     if (widget.currentUid == widget.post?.uid)
+        //       IconButton(
+        //         onPressed: () => handleDeletePost(context),
+        //         icon: Icon(Icons.more_vert),
+        //       ),
+        //   ],
+        // ),
+        appBar: AppHeader(
+          isAppTitle: false,
+          titleText: '詳細ページ',
+          actionWidget: authUser?.uid == post?.uid
+              ? IconButton(
+                  onPressed: () => handleDeletePost(context),
+                  icon: Icon(Icons.more_vert),
+                )
+              : null,
+        ),
+        body: ListView(
+          children: <Widget>[
+            PostView(
+                userModel: userModel,
+                post: post,
+                index: index,
+                parentLikeReadNotifierProvider: likeReadNotifierProvider),
+          ],
+        ));
   }
 
   handleDeletePost(BuildContext parentContext) {
@@ -67,41 +82,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
         });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        // appBar: AppBar(
-        //   title: const Text('テストアプリ'),
-        //   actions: <Widget>[
-        //     if (widget.currentUid == widget.post?.uid)
-        //       IconButton(
-        //         onPressed: () => handleDeletePost(context),
-        //         icon: Icon(Icons.more_vert),
-        //       ),
-        //   ],
-        // ),
-        appBar: AppHeader(
-          isAppTitle: false,
-          titleText: '詳細ページ',
-          actionWidget: widget.currentUid == widget.post?.uid
-              ? IconButton(
-                  onPressed: () => handleDeletePost(context),
-                  icon: Icon(Icons.more_vert),
-                )
-              : null,
-        ),
-        body: !_isLoading
-            ? ListView(
-                children: <Widget>[
-                  // PostView(
-                  //   currentUid: widget.currentUid,
-                  //   userModel: _latestUserModel,
-                  //   post: _latestPost,
-                  // ),
-                ],
-              )
-            : Center(
-                child: CircularProgressIndicator(),
-              ));
+  deletePost(context) async {
+    await PostService.deletePost(post);
+    Navigator.pop(context);
+    Navigator.pop(context);
   }
 }
