@@ -1,24 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:instagram_flutter02/common_widgets/custom_cached_image.dart';
 import 'package:instagram_flutter02/models/post.dart';
+import 'package:instagram_flutter02/models/user_model.dart';
+import 'package:instagram_flutter02/providers/like_read_notifier_provider.dart';
+import 'package:instagram_flutter02/providers/profile_provider.dart';
 import 'package:instagram_flutter02/screens/post_detail_screen.dart';
+import 'package:instagram_flutter02/services/api/auth_service.dart';
+import 'package:provider/provider.dart';
 
-class PostGridView extends StatefulWidget {
-  List<Post>? posts;
+class PostGridView extends StatelessWidget {
   String? currentUid;
+  ProfileProvider? profileProvider;
 
-  PostGridView({this.currentUid, this.posts});
+  PostGridView({this.currentUid, this.profileProvider});
+
+  BuildContext? _context;
 
   @override
-  _PostGridViewState createState() => _PostGridViewState();
-}
+  Widget build(BuildContext context) {
+    _context = context;
+    return buildProfilePosts();
+  }
 
-class _PostGridViewState extends State<PostGridView> {
   buildProfilePosts() {
     List<GridTile> gridTiles = [];
 
-    widget.posts!.forEach((post) {
-      gridTiles.add(GridTile(child: PostTile(post)));
+    profileProvider?.posts?.asMap().forEach((int index, Post post) {
+      gridTiles.add(GridTile(child: PostTile(index, post)));
     });
     return GridView.count(
       crossAxisCount: 2,
@@ -31,33 +39,32 @@ class _PostGridViewState extends State<PostGridView> {
     );
   }
 
-  goToDetailPost(post) async {
-    // final result = await Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (context) =>
-    //         PostDetailScreen(currentUid: widget.currentUid, post: post),
-    //   ),
-    // );
-    // if (result != null) {
-    //   for (var i = 0; i < widget.posts!.length; i++) {
-    //     if (post.id == widget.posts![i].id) {
-    //       widget.posts!.removeAt(i);
-    //     }
-    //   }
-    //   setState(() {});
-    // }
-  }
-
-  PostTile(post) {
-    return GestureDetector(
-      onTap: () => goToDetailPost(post),
-      child: customCachedImage(post.photoUrl),
+  goToDetailPost(index, post) async {
+    UserModel userModel = await AuthService.getUser(post.uid);
+    Navigator.of(_context!).push(
+      MaterialPageRoute(builder: (context) {
+        return ChangeNotifierProvider<LikeReadNotifierProvider>(
+          create: (context) =>
+              LikeReadNotifierProvider(post!, currentUid!, _context!, index!)
+                ..init(),
+          builder: (context, child) {
+            final likeReadNotifierProvider =
+                Provider.of<LikeReadNotifierProvider>(context);
+            return ChangeNotifierProvider.value(
+              value: likeReadNotifierProvider,
+              child: PostDetailScreen(
+                  post: post, userModel: userModel, index: index),
+            );
+          },
+        );
+      }),
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return buildProfilePosts();
+  PostTile(index, post) {
+    return GestureDetector(
+      onTap: () => goToDetailPost(index, post),
+      child: customCachedImage(post.photoUrl),
+    );
   }
 }

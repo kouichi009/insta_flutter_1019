@@ -11,7 +11,7 @@ class LaunchScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final authUser = context.watch<User?>();
     if (authUser != null) {
-      return HomeScreen();
+      return HomeScreen(currentUid: authUser.uid);
     } else {
       return Container();
     }

@@ -6,54 +6,28 @@ import 'package:instagram_flutter02/common_widgets/post_grid_view.dart';
 import 'package:instagram_flutter02/common_widgets/post_view.dart';
 import 'package:instagram_flutter02/models/post.dart';
 import 'package:instagram_flutter02/models/user_model.dart';
+import 'package:instagram_flutter02/providers/profile_provider.dart';
 import 'package:instagram_flutter02/screens/edit_profile_screen.dart';
 import 'package:instagram_flutter02/screens/home_screen.dart';
 import 'package:instagram_flutter02/screens/news_api/news_screen.dart';
 import 'package:instagram_flutter02/services/api/post_service.dart';
 import 'package:instagram_flutter02/utilities/constants.dart';
 import 'package:instagram_flutter02/utilities/themes.dart';
+import 'package:instagram_flutter02/utilities/stateful_wrapper.dart';
+import 'package:provider/provider.dart';
 
-class ProfileScreen extends StatefulWidget {
+class ProfileScreen extends StatelessWidget {
   String? uid;
   ProfileScreen({this.uid});
 
-  @override
-  _ProfileScreenState createState() => _ProfileScreenState();
-}
-
-class _ProfileScreenState extends State<ProfileScreen> {
+  String? currentUid;
+  BuildContext? _context;
+  ProfileProvider? _profileProvider;
   String postType = '';
-  List<Post> _posts = [];
-  String currentUid = '';
-
-  @override
-  void initState() {
-    super.initState();
-    queryUserPosts();
-  }
-
-  queryUserPosts() async {
-    currentUid = FirebaseAuth.instance.currentUser!.uid;
-    List<Post> posts = await PostService.queryUserPosts(widget.uid);
-    if (!mounted) return;
-    setState(() {
-      _posts = posts;
-      postType = MYPOSTS;
-    });
-  }
-
-  queryLikedPosts() async {
-    List<Post> posts = await PostService.queryLikedPosts(widget.uid);
-    if (!mounted) return;
-    setState(() {
-      postType = FAV;
-      _posts = posts;
-    });
-  }
 
   buildProfileHeader() {
     return FutureBuilder(
-        future: usersRef.doc(widget.uid).get(),
+        future: usersRef.doc(uid).get(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (!snapshot.hasData) {
             // return circularProgress();
@@ -88,7 +62,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               // buildCountColumn("following", followingCount),
                             ],
                           ),
-                          if (widget.uid == currentUid)
+                          if (uid == currentUid)
                             Container(
                               padding: EdgeInsets.only(top: 2.0),
                               child: FlatButton(
@@ -125,21 +99,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
         });
   }
 
-  buildpostType() {
+  buildPostType() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
         IconButton(
-          onPressed: () => queryUserPosts(),
+          onPressed: () => _profileProvider?.queryUserPosts(uid),
           icon: Icon(Icons.account_circle),
-          color: postType == MYPOSTS
-              ? Theme.of(context).primaryColor
+          color: _profileProvider?.postType == MYPOSTS
+              ? Theme.of(_context!).primaryColor
               : Colors.grey,
         ),
         IconButton(
-          onPressed: () => queryLikedPosts(),
+          onPressed: () => _profileProvider?.queryLikedPosts(uid),
           icon: Icon(Icons.favorite),
-          color: postType == FAV ? Theme.of(context).primaryColor : Colors.grey,
+          color: _profileProvider?.postType == FAV
+              ? Theme.of(_context!).primaryColor
+              : Colors.grey,
         ),
       ],
     );
@@ -147,40 +123,52 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   goToEditProfile(userModel) async {
     await Navigator.push(
-        context,
+        _context!,
         MaterialPageRoute(
             builder: (context) => EditProfileScreen(currentUid: currentUid)));
-    setState(() {});
   }
 
   Widget _buildGridPosts() {
-    return PostGridView(currentUid: currentUid, posts: _posts);
+    return PostGridView(
+        currentUid: currentUid, profileProvider: _profileProvider);
   }
 
   goToNewsApiPage() {
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => NewsScreen()));
+        _context!, MaterialPageRoute(builder: (context) => NewsScreen()));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppHeader(
-          isAppTitle: false,
-          titleText: 'マイページ',
-          actionWidget: IconButton(
-              icon: Icon(Icons.check_circle_outline, color: Colors.black),
-              onPressed: () => goToNewsApiPage())),
-      body: ListView(
-        children: <Widget>[
-          buildProfileHeader(),
-          Divider(),
-          buildpostType(),
-          _buildGridPosts(),
-          // RefreshIndicator(
-          //     onRefresh: () => queryPosts(), child: _buildDisplayPosts())
-          // PostGridView(posts: []),
-        ],
+    final authUser = context.watch<User?>();
+    currentUid = authUser?.uid;
+    _context = context;
+    _profileProvider = context.watch<ProfileProvider?>();
+    // _profileProvider?.queryUserPosts(currentUid);
+    return StatefulWrapper(
+      onInit: () {
+        _profileProvider?.queryUserPosts(currentUid).then((value) {
+          print('Async done');
+        });
+      },
+      child: Scaffold(
+        appBar: AppHeader(
+            isAppTitle: false,
+            titleText: '${currentUid}',
+            actionWidget: IconButton(
+                icon: Icon(Icons.check_circle_outline, color: Colors.black),
+                onPressed: () => goToNewsApiPage())),
+        body: ListView(
+          children: <Widget>[
+            buildProfileHeader(),
+            Divider(),
+            buildPostType(),
+            _buildGridPosts(),
+            // RefreshIndicator(
+            //     onRefresh: () => queryPosts(), child: _buildDisplayPosts())
+            // PostGridView(posts: []),
+          ],
+        ),
       ),
     );
   }

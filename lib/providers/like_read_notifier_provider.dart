@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:instagram_flutter02/models/post.dart';
 import 'package:instagram_flutter02/models/user_model.dart';
+import 'package:instagram_flutter02/providers/profile_provider.dart';
 import 'package:instagram_flutter02/providers/timeline_provider.dart';
 import 'package:instagram_flutter02/services/api/post_service.dart';
 import 'package:provider/provider.dart';
@@ -22,6 +23,8 @@ class LikeReadNotifierProvider extends ChangeNotifier {
   bool _isShowHeart = false;
   bool isLoading = false;
   late TimelineProvider _timelineProvider;
+  late ProfileProvider _profileProvider;
+
   // bool _isPushingLike = false;
   // bool _isReadMore = false;
   // String _loremIpsum =
@@ -31,7 +34,7 @@ class LikeReadNotifierProvider extends ChangeNotifier {
   int get likeCount => _likeCount;
   bool get isReadMore => _isReadMore;
   bool get isShowHeart => _isShowHeart;
-  // bool get isReadMore => _isReadMore;
+  ProfileProvider get profileProvider => _profileProvider;
 
   void init() {
     print(_post.id);
@@ -41,6 +44,7 @@ class LikeReadNotifierProvider extends ChangeNotifier {
     _isLiked = _post.likes?[_currentUid] == true;
     _likeCount = _post.likeCount!;
     _timelineProvider = _context.watch<TimelineProvider>();
+    _profileProvider = _context.watch<ProfileProvider>();
   }
 
   void toggleLike() async {
@@ -87,6 +91,10 @@ class LikeReadNotifierProvider extends ChangeNotifier {
 
     _timelineProvider.updatePost(
         index: _index, likes: _likes, likeCount: _likeCount);
+
+    _profileProvider.updatePost(
+        index: _index, likes: _likes, likeCount: _likeCount);
+
     notifyListeners();
   }
 
@@ -101,13 +109,14 @@ class LikeReadNotifierProvider extends ChangeNotifier {
     if (_isLiked) return;
     _isShowHeart = true;
     notifyListeners();
-    // Timer(Duration(milliseconds: 500), () {
-    // isLoading = false;
-    print('toggleShowHeart@@@@@@@');
     toggleLike();
-    // });
-    // setState(() {
-    //   isReadMore = !isReadMore;
-    // });
+  }
+
+  void deletePost() async {
+    // await PostService.deletePost(_post);
+
+    _timelineProvider.deletePost(index: _index);
+    _profileProvider.deletePost(index: _index);
+    notifyListeners();
   }
 }

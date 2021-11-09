@@ -16,13 +16,15 @@ class PostDetailScreen extends StatelessWidget {
 
   PostDetailScreen({this.post, this.userModel, this.index});
 
+  late LikeReadNotifierProvider _likeReadNotifierProvider;
+
   @override
   Widget build(BuildContext context) {
     print(post?.id);
     final authUser = context.watch<User?>();
-    final likeReadNotifierProvider = context.watch<LikeReadNotifierProvider>();
+    _likeReadNotifierProvider = context.watch<LikeReadNotifierProvider>();
     print(authUser);
-    print(likeReadNotifierProvider);
+    print(_likeReadNotifierProvider);
     // final likeReadNotifierProvider =
     //     Provider.of<LikeReadNotifierProvider>(context);
     return Scaffold(
@@ -52,7 +54,7 @@ class PostDetailScreen extends StatelessWidget {
                 userModel: userModel,
                 post: post,
                 index: index,
-                parentLikeReadNotifierProvider: likeReadNotifierProvider),
+                parentLikeReadNotifierProvider: _likeReadNotifierProvider),
           ],
         ));
   }
@@ -83,7 +85,7 @@ class PostDetailScreen extends StatelessWidget {
   }
 
   deletePost(context) async {
-    await PostService.deletePost(post);
+    _likeReadNotifierProvider.deletePost();
     Navigator.pop(context);
     Navigator.pop(context);
   }

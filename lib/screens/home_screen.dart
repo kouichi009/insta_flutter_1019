@@ -7,7 +7,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_flutter02/providers/bottom_navigation_bar_provider.dart';
 import 'package:instagram_flutter02/screens/camera_screen.dart';
-import 'package:instagram_flutter02/screens/edit_profile_screen.dart';
 import 'package:instagram_flutter02/screens/login_screen.dart';
 import 'package:instagram_flutter02/screens/news_api/news_screen.dart';
 
@@ -19,19 +18,20 @@ import 'package:instagram_flutter02/utilities/constants.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
-  // const HomeScreen({Key? key}) : super(key: key);
+  String? currentUid;
+  HomeScreen({this.currentUid});
 
   FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
-  var currentTab = [
-    TimelineScreen(),
-    CameraScreen(),
-    ProfileScreen(),
-    SignUpScreen(),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    var currentTab = [
+      TimelineScreen(),
+      CameraScreen(),
+      ProfileScreen(uid: currentUid),
+      SignUpScreen(),
+    ];
+
     final bottomNavigationBar = context.watch<BottomNavigationBarProvider>();
 
     // final bottomNavigationBar =

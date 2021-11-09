@@ -17,7 +17,7 @@ class TimelineProvider with ChangeNotifier {
   List<Post> get posts => _posts;
   List<UserModel> get userModels => _userModels;
 
-  void init() async {
+  void init() {
     getQueryTimeline();
     // Map<String, dynamic> values = await PostService.queryTimeline(
     //     _documentLimit, _lastDocument, _hasMore);
@@ -69,5 +69,11 @@ class TimelineProvider with ChangeNotifier {
     if (likes != null) posts[index].likes = likes;
     if (likeCount != null) posts[index].likeCount = likeCount;
     print(posts[index].isReadMore);
+  }
+
+  deletePost({int? index}) {
+    print(posts.length);
+    posts.removeAt(index!);
+    print(posts.length);
   }
 }
