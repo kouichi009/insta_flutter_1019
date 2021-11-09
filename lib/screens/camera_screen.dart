@@ -1,33 +1,38 @@
 import 'dart:io';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:instagram_flutter02/common_widgets/app_header.dart';
 import 'package:instagram_flutter02/common_widgets/progress.dart';
-import 'package:instagram_flutter02/common_widgets/select_image_dialog.dart';
+import 'package:instagram_flutter02/providers/bottom_navigation_bar_provider.dart';
+import 'package:instagram_flutter02/providers/camera_provider.dart';
+import 'package:instagram_flutter02/screens/home_screen.dart';
 import 'package:instagram_flutter02/screens/launch_screen.dart';
 import 'package:instagram_flutter02/services/api/post_service.dart';
-import 'package:instagram_flutter02/utilities/constants.dart';
-import 'package:instagram_flutter02/utilities/themes.dart';
 import 'package:uuid/uuid.dart';
+import 'package:provider/provider.dart';
 
-import 'home_screen.dart';
-
-class CameraScreen extends StatefulWidget {
-  String? currentUid;
-
-  CameraScreen({this.currentUid = 'iVx0nC5VTVg5Yf1FGTzXEQPrq113'});
-
-  @override
-  _CameraScreenState createState() => _CameraScreenState();
-}
-
-class _CameraScreenState extends State<CameraScreen> {
+class CameraScreen extends StatelessWidget {
+  // const CameraScreen({ Key? key }) : super(key: key);
   TextEditingController captionController = TextEditingController();
 
-  File? file;
   String postId = Uuid().v4();
-  bool isUploading = false;
+  BuildContext? _context;
+  late CameraProvider _cameraProvider;
+  late String? currentUid;
+  late BottomNavigationBarProvider? _bottomNavigationBar;
+
+  @override
+  Widget build(BuildContext context) {
+    _context = context;
+    _cameraProvider = context.watch<CameraProvider>();
+    final User? authUser = context.watch<User?>();
+    _bottomNavigationBar = _context!.watch<BottomNavigationBarProvider>();
+    currentUid = authUser?.uid;
+    return buildUploadForm();
+  }
 
   Scaffold buildUploadForm() {
     return Scaffold(
@@ -37,7 +42,7 @@ class _CameraScreenState extends State<CameraScreen> {
       ),
       body: ListView(
         children: <Widget>[
-          isUploading ? linearProgress() : Text(""),
+          _cameraProvider.isLoading ? linearProgress() : Text(""),
           GestureDetector(
             onTap: () {
               selectImage();
@@ -49,7 +54,7 @@ class _CameraScreenState extends State<CameraScreen> {
               child: Center(
                 child: AspectRatio(
                   aspectRatio: 16 / 9,
-                  child: (file == null)
+                  child: (_cameraProvider.file == null)
                       ? (Container(
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.black),
@@ -67,7 +72,7 @@ class _CameraScreenState extends State<CameraScreen> {
                             decoration: BoxDecoration(
                               image: DecorationImage(
                                 fit: BoxFit.cover,
-                                image: FileImage(file!),
+                                image: FileImage(_cameraProvider.file),
                               ),
                             ),
                           ),
@@ -95,7 +100,7 @@ class _CameraScreenState extends State<CameraScreen> {
             padding: const EdgeInsets.all(35.0),
             height: 130.0,
             child: FlatButton(
-              onPressed: isUploading ? null : () => upload(),
+              onPressed: _cameraProvider.isLoading ? null : () => upload(),
               color: Colors.orange,
               padding: const EdgeInsets.all(10.0),
               child: Text(
@@ -113,7 +118,7 @@ class _CameraScreenState extends State<CameraScreen> {
 
   selectImage() {
     return showDialog(
-      context: context,
+      context: _context!,
       builder: (context) {
         return SimpleDialog(
           title: Text("Create Post"),
@@ -135,7 +140,7 @@ class _CameraScreenState extends State<CameraScreen> {
   }
 
   handleImage(type) async {
-    Navigator.pop(context);
+    Navigator.pop(_context!);
     ImageSource imageSource;
     if (type == 'camera') {
       imageSource = ImageSource.camera;
@@ -147,10 +152,8 @@ class _CameraScreenState extends State<CameraScreen> {
     // Pick an image
     final XFile? file = await _picker.pickImage(source: imageSource);
     if (file == null) return;
-    final imageTemporary = File(file.path);
-    setState(() {
-      this.file = imageTemporary;
-    });
+    final File imageTemporary = File(file.path);
+    _cameraProvider.setFile(imageTemporary);
   }
 
   Future<String> uploadImage(imageFile) async {
@@ -162,25 +165,20 @@ class _CameraScreenState extends State<CameraScreen> {
   }
 
   upload() async {
-    setState(() {
-      isUploading = true;
-    });
-    final downloadUrl = await uploadImage(this.file);
-    await PostService.uploadPost(
-        postId, widget.currentUid, downloadUrl, captionController.text);
-    setState(() {
-      isUploading = false;
-    });
+    print(_cameraProvider);
+    _cameraProvider.updateIsLoding(true);
 
+    final downloadUrl = await uploadImage(_cameraProvider.file);
+    await PostService.uploadPost(
+        postId, currentUid, downloadUrl, captionController.text);
+    _cameraProvider.updateIsLoding(false);
+    _cameraProvider.setFile(null);
+
+    _bottomNavigationBar!.currentIndex = 0;
     Navigator.pushAndRemoveUntil(
-      context,
+      _context!,
       MaterialPageRoute(builder: (context) => LaunchScreen()),
       (Route<dynamic> route) => false,
     );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return buildUploadForm();
   }
 }

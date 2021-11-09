@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:instagram_flutter02/models/user_model.dart';
 import 'package:instagram_flutter02/providers/bottom_navigation_bar_provider.dart';
+import 'package:instagram_flutter02/providers/camera_provider.dart';
 import 'package:instagram_flutter02/providers/like_read_notifier_provider.dart';
 import 'package:instagram_flutter02/providers/timeline_provider.dart';
 import 'package:instagram_flutter02/screens/home_screen.dart';
@@ -35,8 +36,8 @@ class MyApp extends StatelessWidget {
               create: (context) => BottomNavigationBarProvider()),
           ChangeNotifierProvider<TimelineProvider>(
               create: (context) => TimelineProvider()..init()),
-          // ChangeNotifierProvider<LikeNotifier>(
-          //     create: (context) => LikeNotifier()),
+          ChangeNotifierProvider<CameraProvider>(
+              create: (context) => CameraProvider()),
           // ChangeNotifierProvider<PostViewProvider>(
           //     create: (context) => PostViewProvider()),
           // StreamProvider<List<BlogPost>>(
