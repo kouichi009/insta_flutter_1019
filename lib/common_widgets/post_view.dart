@@ -8,15 +8,18 @@ import 'package:instagram_flutter02/models/post.dart';
 import 'package:instagram_flutter02/models/user_model.dart';
 import 'package:instagram_flutter02/providers/like_read_notifier_provider.dart';
 import 'package:instagram_flutter02/screens/post_detail_screen.dart';
+import 'package:instagram_flutter02/utilities/constants.dart';
 import 'package:instagram_flutter02/utilities/themes.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+
+LikeReadNotifierProvider? _reUseLikeReadNotifierProvider;
 
 class PostView extends StatelessWidget {
   final UserModel? userModel;
   final Post? post;
   final int? index;
-  final LikeReadNotifierProvider? parentLikeReadNotifierProvider;
+  LikeReadNotifierProvider? parentLikeReadNotifierProvider;
 
   PostView(
       {this.userModel,
@@ -87,7 +90,10 @@ class PostView extends StatelessWidget {
     // PostViewProvider postViewProvider = context.watch<PostViewProvider>();
     final authUser = parentContext.watch<User?>();
 
-    if (parentLikeReadNotifierProvider != null) {
+    if (parentLikeReadNotifierProvider == null &&
+        _reUseLikeReadNotifierProvider != null) {
+      parentLikeReadNotifierProvider = _reUseLikeReadNotifierProvider;
+    } else if (parentLikeReadNotifierProvider != null) {
       isDetailPage = true;
       return postTile(context, parentLikeReadNotifierProvider!);
     }
@@ -208,20 +214,32 @@ class PostView extends StatelessWidget {
           ),
         ],
       ),
-      onTap: () {
+      onTap: () async {
         if (isDetailPage) return;
-        Navigator.of(context).push(
+        LikeReadNotifierProvider result = await Navigator.of(context).push(
+          // MaterialPageRoute(
+          //     builder: (context) => PostDetailScreen(
+          //           post: post,
+          //           userModel: userModel,
+          //           index: index,
+          //         )),
           MaterialPageRoute(
             builder: (context) {
               // return BlogPage(blogPost: post);
               return ChangeNotifierProvider.value(
                 value: likeReadNotifierProvider,
                 child: PostDetailScreen(
-                    post: post, userModel: userModel, index: index),
+                  post: post,
+                  userModel: userModel,
+                  index: index,
+                ),
               );
             },
           ),
         );
+        LikeReadNotifierProvider likeread = result;
+        _reUseLikeReadNotifierProvider = likeread;
+        print('result: $_reUseLikeReadNotifierProvider!!!!!!@@@@@@@@@@@');
       },
     );
   }

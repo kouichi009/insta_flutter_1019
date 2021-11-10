@@ -62,18 +62,30 @@ class TimelineProvider with ChangeNotifier {
       bool? isReadMore,
       Map<String, dynamic>? likes,
       int? likeCount}) {
-    print(posts.length);
-    print(posts[index!]);
-    print(posts[index].isReadMore);
-    if (isReadMore != null) posts[index].isReadMore = isReadMore;
-    if (likes != null) posts[index].likes = likes;
-    if (likeCount != null) posts[index].likeCount = likeCount;
-    print(posts[index].isReadMore);
+    if (_posts == null) return;
+    print(_posts);
+    print(_posts.length);
+    print(_posts[index!]);
+    print(_posts[index].isReadMore);
+    if (isReadMore != null) _posts[index].isReadMore = isReadMore;
+    if (likes != null) _posts[index].likes = likes;
+    if (likeCount != null) _posts[index].likeCount = likeCount;
+    print(_posts[index].isReadMore);
   }
 
   deletePost({int? index}) {
-    print(posts.length);
-    posts.removeAt(index!);
-    print(posts.length);
+    if (_posts.length < index!) return;
+    print(_posts.length);
+    _posts.removeAt(index);
+    print(_posts.length);
+    notifyListeners();
   }
+
+  // void deletePost() async {
+  //   // await PostService.deletePost(_post);
+
+  //   _timelineProvider.deletePost(index: _index);
+  //   _profileProvider.deletePost(index: _index);
+  //   notifyListeners();
+  // }
 }

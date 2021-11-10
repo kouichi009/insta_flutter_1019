@@ -6,3 +6,5 @@ final MYPOSTS = 'MYPOSTS';
 final FAV = 'FAV';
 final MALE = 'male';
 final FEMALE = 'female';
+final TIMELINE_PAGE = 'TIMELINE';
+final PROFILE_PAGE = 'PROFILE';

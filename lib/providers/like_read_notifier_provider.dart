@@ -111,12 +111,4 @@ class LikeReadNotifierProvider extends ChangeNotifier {
     notifyListeners();
     toggleLike();
   }
-
-  void deletePost() async {
-    // await PostService.deletePost(_post);
-
-    _timelineProvider.deletePost(index: _index);
-    _profileProvider.deletePost(index: _index);
-    notifyListeners();
-  }
 }

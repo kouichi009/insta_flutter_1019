@@ -29,16 +29,19 @@ class ProfileProvider extends ChangeNotifier {
   }
 
   updatePost({int? index, Map<String, dynamic>? likes, int? likeCount}) {
-    print(posts?.length);
-    print(posts?[index!]);
-    print(posts?[index!].isReadMore);
+    if (_posts == null) return;
+    print(_posts);
+    print(_posts?.length);
+    print(_posts?[index!]);
+    print(_posts?[index!].isReadMore);
     if (likes != null) posts![index!].likes = likes;
     if (likeCount != null) posts![index!].likeCount = likeCount;
   }
 
   deletePost({int? index}) {
-    print(posts?.length);
-    posts?.removeAt(index!);
-    print(posts?.length);
+    print(_posts?.length);
+    _posts?.removeAt(index!);
+    print(_posts?.length);
+    notifyListeners();
   }
 }

@@ -5,7 +5,10 @@ import 'package:instagram_flutter02/common_widgets/post_view.dart';
 import 'package:instagram_flutter02/models/post.dart';
 import 'package:instagram_flutter02/models/user_model.dart';
 import 'package:instagram_flutter02/providers/like_read_notifier_provider.dart';
+import 'package:instagram_flutter02/providers/profile_provider.dart';
+import 'package:instagram_flutter02/providers/timeline_provider.dart';
 import 'package:instagram_flutter02/services/api/post_service.dart';
+import 'package:instagram_flutter02/utilities/constants.dart';
 import 'package:provider/src/provider.dart';
 
 class PostDetailScreen extends StatelessWidget {
@@ -17,12 +20,17 @@ class PostDetailScreen extends StatelessWidget {
   PostDetailScreen({this.post, this.userModel, this.index});
 
   late LikeReadNotifierProvider _likeReadNotifierProvider;
+  late TimelineProvider _timelineProvider;
+  late ProfileProvider _profileProvider;
 
   @override
   Widget build(BuildContext context) {
     print(post?.id);
     final authUser = context.watch<User?>();
+    _profileProvider = context.watch<ProfileProvider>();
+    _timelineProvider = context.watch<TimelineProvider>();
     _likeReadNotifierProvider = context.watch<LikeReadNotifierProvider>();
+
     print(authUser);
     print(_likeReadNotifierProvider);
     // final likeReadNotifierProvider =
@@ -85,8 +93,10 @@ class PostDetailScreen extends StatelessWidget {
   }
 
   deletePost(context) async {
-    _likeReadNotifierProvider.deletePost();
+    _timelineProvider.deletePost(index: index);
+    _profileProvider.deletePost(index: index);
+    // _likeReadNotifierProvider.deletePost();
     Navigator.pop(context);
-    Navigator.pop(context);
+    Navigator.pop(context, _likeReadNotifierProvider);
   }
 }

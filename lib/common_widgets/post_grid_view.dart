@@ -6,6 +6,7 @@ import 'package:instagram_flutter02/providers/like_read_notifier_provider.dart';
 import 'package:instagram_flutter02/providers/profile_provider.dart';
 import 'package:instagram_flutter02/screens/post_detail_screen.dart';
 import 'package:instagram_flutter02/services/api/auth_service.dart';
+import 'package:instagram_flutter02/utilities/constants.dart';
 import 'package:provider/provider.dart';
 
 class PostGridView extends StatelessWidget {
@@ -16,10 +17,30 @@ class PostGridView extends StatelessWidget {
 
   BuildContext? _context;
 
+  ProfileProvider? _profileProvider;
+
   @override
   Widget build(BuildContext context) {
     _context = context;
+    // return ChangeNotifierProvider<LikeReadNotifierProvider>(
+    //   create: (context) =>
+    //       LikeReadNotifierProvider(post!, authUser!.uid, _context, index!)
+    //         ..init(),
+    //   builder: (context, child) {
+    //     final likeReadNotifierProvider =
+    //         Provider.of<LikeReadNotifierProvider>(context);
+    //     return buildProfilePosts();
+    //   },
+    // );
     return buildProfilePosts();
+    // return ChangeNotifierProvider<ProfileProvider>(
+    //   create: (context) => ProfileProvider(),
+    //   builder: (context, child) {
+    //     // _context = context;
+    //     _profileProvider = Provider.of<ProfileProvider>(context);
+    //     return buildProfilePosts();
+    //   },
+    // );
   }
 
   buildProfilePosts() {
@@ -39,32 +60,38 @@ class PostGridView extends StatelessWidget {
     );
   }
 
-  goToDetailPost(index, post) async {
+  goToDetailPost(
+      index, post, LikeReadNotifierProvider likeReadNotifierProvider) async {
     UserModel userModel = await AuthService.getUser(post.uid);
     Navigator.of(_context!).push(
-      MaterialPageRoute(builder: (context) {
-        return ChangeNotifierProvider<LikeReadNotifierProvider>(
-          create: (context) =>
-              LikeReadNotifierProvider(post!, currentUid!, _context!, index!)
-                ..init(),
-          builder: (context, child) {
-            final likeReadNotifierProvider =
-                Provider.of<LikeReadNotifierProvider>(context);
-            return ChangeNotifierProvider.value(
-              value: likeReadNotifierProvider,
-              child: PostDetailScreen(
-                  post: post, userModel: userModel, index: index),
-            );
-          },
-        );
-      }),
+      MaterialPageRoute(
+        builder: (context) {
+          return ChangeNotifierProvider.value(
+            value: likeReadNotifierProvider,
+            child: PostDetailScreen(
+              post: post,
+              userModel: userModel,
+              index: index,
+            ),
+          );
+        },
+      ),
     );
   }
 
   PostTile(index, post) {
-    return GestureDetector(
-      onTap: () => goToDetailPost(index, post),
-      child: customCachedImage(post.photoUrl),
+    return ChangeNotifierProvider<LikeReadNotifierProvider>(
+      create: (context) =>
+          LikeReadNotifierProvider(post!, currentUid!, _context!, index!)
+            ..init(),
+      builder: (context, child) {
+        final likeReadNotifierProvider =
+            Provider.of<LikeReadNotifierProvider>(context);
+        return GestureDetector(
+          onTap: () => goToDetailPost(index, post, likeReadNotifierProvider),
+          child: customCachedImage(post.photoUrl),
+        );
+      },
     );
   }
 }
