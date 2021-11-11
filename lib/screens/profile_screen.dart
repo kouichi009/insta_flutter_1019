@@ -34,6 +34,7 @@ class ProfileScreen extends StatelessWidget {
             return Text('abc');
           }
           UserModel userModel = UserModel.fromDoc(snapshot.data);
+          _profileProvider?.userModel = userModel;
           return Padding(
             padding: EdgeInsets.all(16.0),
             child: Column(
@@ -122,10 +123,28 @@ class ProfileScreen extends StatelessWidget {
   }
 
   goToEditProfile(userModel) async {
-    await Navigator.push(
-        _context!,
-        MaterialPageRoute(
-            builder: (context) => EditProfileScreen(currentUid: currentUid)));
+    // Navigator.of(_context!).push(
+    //   MaterialPageRoute(
+    //     builder: (context) {
+    //       return ChangeNotifierProvider.value(
+    //         value: context.watch<ProfileProvider?>()!..initEditPage(userModel),
+    //         child: EditProfileScreen(userModel: userModel),
+    //       );
+    //     },
+    //   ),
+    // );
+
+    // _profileProvider!.isLoading = true;
+    final result = await Navigator.push(
+      _context!,
+      MaterialPageRoute(
+        builder: (context) => EditProfileScreen(userModel: userModel),
+      ),
+    );
+    print('result: $result');
+    if (result == 'updated') {
+      _profileProvider?.callNotifiyListners();
+    }
   }
 
   Widget _buildGridPosts() {
@@ -142,11 +161,12 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final authUser = context.watch<User?>();
     currentUid = authUser?.uid;
-    _context = context;
-    _profileProvider = context.watch<ProfileProvider?>();
-    // _profileProvider?.queryUserPosts(currentUid);
+    // _context = context;
+    // _profileProvider = context.watch<ProfileProvider?>();
     return StatefulWrapper(
       onInit: () {
+        _context = context;
+        _profileProvider = context.watch<ProfileProvider?>();
         _profileProvider?.queryUserPosts(currentUid).then((value) {
           print('Async done');
         });
