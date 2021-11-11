@@ -14,17 +14,18 @@ class AuthService {
 
   // static final FirebaseMessaging _messaging = FirebaseMessaging();
 
-  static Future<void> signUpUser(
-      BuildContext context, String name, String email, String password) async {
+  static Future<void> signUpUser(String email, String password) async {
     try {
       UserCredential userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
       User? signedInUser = userCredential.user;
       String uid = signedInUser!.uid;
       final timestamp = FieldValue.serverTimestamp();
+      String name = email.substring(0, email.indexOf('@'));
+      print(name);
 
       usersRef.doc(uid).set({
-        'name': name,
+        'name': 'name',
         'email': email,
         'profileImageUrl':
             'https://applimura.com/wp-content/uploads/2019/08/twittericon13.jpg',

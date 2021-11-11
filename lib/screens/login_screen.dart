@@ -5,59 +5,33 @@ import 'package:instagram_flutter02/screens/sign_up_screen.dart';
 import 'package:instagram_flutter02/services/api/auth_service.dart';
 import 'package:instagram_flutter02/utilities/themes.dart';
 
-class LoginScreen extends StatefulWidget {
-  static final String id = 'login_screen';
-  // const LoginScreen({Key? key}) : super(key: key);
-
-  @override
-  _LoginScreenState createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends State<LoginScreen> {
+class LoginScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
   String _email = "";
   String _password = "";
+  BuildContext? _context;
   bool _isLoading = false;
 
   _submit() async {
-    FocusScope.of(context).unfocus();
-
-    // if (_formKey.currentState.validate()) {
-    setState(() {
-      // _isLoading = true;
-    });
-    // _formKey.currentState.save();
-    //Logging the user
-    try {
-      await AuthService.loginUser(_email.trim(), _password.trim());
-    } on PlatformException catch (err) {
-      // _showErrorDialog(err.message);
-      setState(() {
-        _isLoading = false;
-      });
-      throw (err);
+    FocusScope.of(_context!).unfocus();
+    _formKey.currentState?.save();
+    if (!_isLoading) {
+      _isLoading = true;
+      print(_formKey.currentState!.validate());
+      if (!_formKey.currentState!.validate()) return _isLoading = false;
+      try {
+        await AuthService.loginUser(_email.trim(), _password.trim());
+      } on PlatformException catch (err) {
+        // _showErrorDialog(err.message!);
+        throw (err);
+      }
+      _isLoading = false;
     }
-  }
-
-  _showErrorDialog(String errorMessage) {
-    showDialog(
-        context: context,
-        builder: (_) {
-          return AlertDialog(
-            title: Text('Error'),
-            content: Text(errorMessage),
-            actions: <Widget>[
-              FlatButton(
-                child: Text('Ok'),
-                onPressed: () => Navigator.pop(context),
-              )
-            ],
-          );
-        });
   }
 
   @override
   Widget build(BuildContext context) {
+    _context = context;
     return Scaffold(
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
@@ -72,6 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     kBillabongFamilyTextStyle.copyWith(fontSize: 50.0)),
                 Form(
                   key: _formKey,
+                  autovalidateMode: AutovalidateMode.always,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
@@ -99,38 +74,35 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       SizedBox(height: 20.0),
-                      if (_isLoading) CircularProgressIndicator(),
-                      if (!_isLoading)
-                        Container(
-                          width: 250.0,
-                          child: FlatButton(
-                            onPressed: _submit,
-                            color: Colors.blue,
-                            padding: const EdgeInsets.all(10.0),
-                            child: Text(
-                              'Login',
-                              style: kFontColorWhiteSize18TextStyle,
-                            ),
+                      Container(
+                        width: 250.0,
+                        child: FlatButton(
+                          onPressed: _submit,
+                          color: Colors.blue,
+                          padding: const EdgeInsets.all(10.0),
+                          child: Text(
+                            'Login',
+                            style: kFontColorWhiteSize18TextStyle,
                           ),
                         ),
+                      ),
                       SizedBox(height: 20.0),
-                      if (!_isLoading)
-                        Container(
-                          width: 250.0,
-                          child: FlatButton(
-                            onPressed: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => SignUpScreen(),
-                                )),
-                            color: Colors.blue,
-                            padding: const EdgeInsets.all(10.0),
-                            child: Text(
-                              'Go to Signup',
-                              style: kFontColorWhiteSize18TextStyle,
-                            ),
+                      Container(
+                        width: 250.0,
+                        child: FlatButton(
+                          onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => SignUpScreen(),
+                              )),
+                          color: Colors.blue,
+                          padding: const EdgeInsets.all(10.0),
+                          child: Text(
+                            'Go to Signup',
+                            style: kFontColorWhiteSize18TextStyle,
                           ),
-                        )
+                        ),
+                      )
                     ],
                   ),
                 )

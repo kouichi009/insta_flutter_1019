@@ -30,6 +30,7 @@ class HomeScreen extends StatelessWidget {
       CameraScreen(),
       ProfileScreen(uid: currentUid),
       SignUpScreen(),
+      LoginScreen(),
     ];
 
     final bottomNavigationBar = context.watch<BottomNavigationBarProvider>();
@@ -55,6 +56,7 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
           BottomNavigationBarItem(icon: Icon(Icons.account_circle)),
+          BottomNavigationBarItem(icon: Icon(Icons.email)),
           BottomNavigationBarItem(icon: Icon(Icons.email)),
         ],
       ),
