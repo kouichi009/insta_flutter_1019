@@ -133,6 +133,7 @@ class PostService {
     await batch.commit();
   }
 
+  //
   static Future uploadPost(postId, currentUid, downloadUrl, caption) async {
     final timestamp = FieldValue.serverTimestamp();
     await postsRef.doc(postId).set({
