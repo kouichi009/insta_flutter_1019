@@ -68,7 +68,7 @@ class PostService {
         .orderBy('timestamp', descending: true)
         .get();
 
-    List<Post> posts = snapshot.docs.map((doc) => Post.fromDoc(doc)).toList();
+    List<Post>? posts = snapshot.docs.map((doc) => Post.fromDoc(doc)).toList();
     return posts;
   }
 
